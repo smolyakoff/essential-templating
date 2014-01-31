@@ -1,0 +1,1 @@
+powershell -NoExit -ExecutionPolicy Unrestricted -File ./build.ps1

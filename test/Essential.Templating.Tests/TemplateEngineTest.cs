@@ -11,6 +11,7 @@ namespace Essential.Templating.Tests
 {
     [TestClass]
     [DeploymentItem("Templates", "Templates")]
+    [DeploymentItem(@"ru\Essential.Templating.Tests.resources.dll", "ru")]
     public class TemplateEngineTest
     {
         private readonly ITemplateEngine _templateEngine;
@@ -29,13 +30,12 @@ namespace Essential.Templating.Tests
         public void RenderLocalizedTemplate_RendersInSpecifiedCulture()
         {
             var template = _templateEngine.Render("Test.cshtml", null, new CultureInfo("ru-RU"));
-
+            
             Assert.IsNotNull(template);
             Debug.WriteLine(template);
 
             Assert.IsTrue(!string.IsNullOrEmpty(template));
         }
-
 
         [TestMethod]
         public void RenderTemplateWithModel_RendersCorrectText()

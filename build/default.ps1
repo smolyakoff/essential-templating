@@ -13,6 +13,7 @@ Properties {
     $ToolsDir = "$BaseDir\tools"
     $NuGetFile = "$ToolsDir\nuget\nuget.exe"
     $MsTestFile = "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\mstest.exe"
+    $CurrentVersion = ""
 }
 
 FormatTaskName {
@@ -20,9 +21,21 @@ FormatTaskName {
     Write-Host "`r`nExecuting [$taskName] ..." -ForegroundColor Blue -BackgroundColor DarkYellow
 }
 
-Task Default -Depends Versioning, Package
+Task Default -Depends Package
 
-Task Package -Depends Test {
+Task Publish -Depends Package {
+    try {
+            [Xml]$nuspec = Get-Content $PackageDir\$PackageName.nuspec
+        $packageFile = "$PackageDir\$PackageName.$($nuspec.package.metadata.version).nupkg"
+        $apiKey = Read-Host NuGet api key?
+        Exec { &$NuGetFile push $packageFile $apiKey }
+        Log-Message "Package was successfully published." Success
+    } catch [Exception] {
+        Log-Message "Failed to publish a package: $($_.Exception.Message)" Error
+    }
+}
+
+Task Package -Depends Versioning, Test {
     New-Item $PackageDir\$PackageName.nuspec -Force -ItemType File | Out-Null
     Copy-Item -Path $BuildDir\$PackageName.nuspec.tmpl -Destination $PackageDir\$PackageName.nuspec -Force -Recurse
     Create-NuGetPackageStructure $PackageDir $Frameworks

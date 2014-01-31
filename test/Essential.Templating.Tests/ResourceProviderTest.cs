@@ -8,6 +8,7 @@ namespace Essential.Templating.Tests
 {
     [TestClass]
     [DeploymentItem("Templates", "Templates")]
+    [DeploymentItem(@"ru\Essential.Templating.Tests.resources.dll", "ru")]
     public class ResourceProviderTest
     {
         [TestMethod]

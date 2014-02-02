@@ -1,2 +1,2 @@
 Import-Module ..\tools\psake\psake.psm1
-Invoke-Psake
+Invoke-Psake -Properties @{ Targets = @("Common") }

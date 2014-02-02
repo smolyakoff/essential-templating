@@ -39,7 +39,7 @@ namespace Essential.Templating.Common.Storage
             ResourceManager resourceManager;
             try
             {
-                resourceManager = resourceManagerProperty.GetValue(null) as ResourceManager;
+                resourceManager = resourceManagerProperty.GetValue(null, null) as ResourceManager;
             }
             catch (Exception ex)
             {

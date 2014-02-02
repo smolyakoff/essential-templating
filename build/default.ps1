@@ -4,7 +4,7 @@ Properties {
     $BuildDir = "$BaseDir\build"
     $SrcDir = "$BaseDir\src"
     $TestDir = "$BaseDir\test"
-    $PackageDir = "$BaseDir\build\package" 
+    $DeployDir = "$BaseDir\build\package" 
 
     $PackageName = "Essential.Templating"
     $Configuration = "Release"
@@ -14,6 +14,13 @@ Properties {
     $NuGetFile = "$ToolsDir\nuget\nuget.exe"
     $MsTestFile = "C:\Program Files (x86)\Microsoft Visual Studio 12.0\Common7\IDE\mstest.exe"
     $CurrentVersion = ""
+    $Packages = @{
+        "Common" = @{ Name = "Essential.Templating.Common" };
+        "Razor" = @{ Name = "Essential.Templating.Razor" }
+    }
+    if (!$Targets){
+        $Targets = $("Common", "Razor")
+    }
 }
 
 FormatTaskName {
@@ -24,66 +31,98 @@ FormatTaskName {
 Task Default -Depends Package
 
 Task Publish -Depends Package {
-    try {
-            [Xml]$nuspec = Get-Content $PackageDir\$PackageName.nuspec
-        $packageFile = "$PackageDir\$PackageName.$($nuspec.package.metadata.version).nupkg"
-        $apiKey = Read-Host NuGet api key?
-        Exec { &$NuGetFile push $packageFile $apiKey }
-        Log-Message "Package was successfully published." Success
-    } catch [Exception] {
-        Log-Message "Failed to publish a package: $($_.Exception.Message)" Error
+    $apiKey = Read-Host NuGet api key?
+    foreach ($target in $Targets){
+        $package = $Packages.Get_Item($target)
+        try {
+            [Xml]$nuspec = Get-Content $DeployDir\$($package.Name)\$($package.Name).nuspec
+            $packageFile = "$DeployDir\$($package.Name)\$($package.Name).$($nuspec.package.metadata.version).nupkg"
+            Exec { &$NuGetFile push $packageFile $apiKey }
+            Log-Message "Package $($package.Name) was successfully published." Success
+        } catch [Exception] {
+            Log-Message "Failed to publish a package: $($_.Exception.Message)" Error
+        }           
     }
 }
 
-Task Package -Depends Versioning, Test {
-    New-Item $PackageDir\$PackageName.nuspec -Force -ItemType File | Out-Null
-    Copy-Item -Path $BuildDir\$PackageName.nuspec.tmpl -Destination $PackageDir\$PackageName.nuspec -Force -Recurse
-    Create-NuGetPackageStructure $PackageDir $Frameworks
-    $frameworkGroups = Get-Files @("$PackageName*.dll", "$PackageName*.xml", "$PackageName*.pdb") $SrcDir $Configuration | Group-Object { $_.Directory.Name }
-    Copy-AsNuGetStructure $PackageDir\lib $frameworkGroups
-    Exec { &$NuGetFile pack $PackageDir\$PackageName.nuspec -OutputDirectory $PackageDir }
-    Log-Message "Package was successfully created." Success
+Task Package -Depends Clean, Versioning, Test {
+    foreach ($target in $Targets){
+        $package = $Packages.Get_Item($target)
+        $packageDir = "$DeployDir\$($package.Name)"
+        New-Item $packageDir\$($package.Name).nuspec -Force -ItemType File | Out-Null
+        Copy-Item -Path $BuildDir\$($package.Name).nuspec.tmpl -Destination $packageDir\$($package.Name).nuspec -Force -Recurse
+        $frameworkGroups = Get-ChildItem -Path $SrcDir -Include @("$($package.Name)*.dll", "$($package.Name)*.xml", "$($package.Name)*.pdb") -Recurse |
+            where FullName -like "*\bin\$Configuration\*" |
+            group { $_.Directory.Name }
+        Copy-AsNuGetStructure $packageDir\lib $frameworkGroups
+        Exec { &$NuGetFile pack $packageDir\$($package.Name).nuspec -OutputDirectory $packageDir }
+        Log-Message "Package $($package.Name) was successfully created." Success
+    }
 }
 
 Task Versioning {
-    [Xml]$nuspec = Get-Content $BuildDir\$PackageName.nuspec.tmpl
-    Log-Message "Changing assemblies version to $($nuspec.package.metadata.version)."
-    Get-ChildItem $SrcDir -Include "AssemblyInfo.cs" -Recurse | ForEach-Object { Update-AssemblyInfo $_ $nuspec} 
+    foreach ($target in $Targets){
+        $package = $Packages.Get_Item($target)
+        $packageName = $package.Name
+        [Xml]$nuspec = Get-Content $BuildDir\$packageName.nuspec.tmpl
+        Log-Message "Changing [$packageName] assemblies version to $($nuspec.package.metadata.version)."
+        Get-ChildItem $SrcDir -Include "AssemblyInfo.cs" -Recurse |
+            where FullName -Contains $packageName |
+            foreach { Update-AssemblyInfo $_ $nuspec}     
+    } 
 }
 
 Task Test -Depends Compile {
-    try {
-        Set-Location $BaseDir
-        $msTestParams = ""
-        Get-Files "*.Tests.dll" $TestDir $Configuration | ForEach-Object { $msTestParams = "`"/testcontainer:$_`" $msTestParams" }
-        Exec { &$MsTestFile $msTestParams }
-        Set-Location $BuildDir
-        Log-Message "All Tests Passed" Success
-    } catch [Exception] {
-        Log-Message "Some tests failed." Error
+    Set-Location $BaseDir
+    foreach ($target in $Targets){
+        try {
+            $package = $Packages.Get_Item($target)
+            $msTestParams = ""
+            Get-ChildItem -Path $TestDir -Include "*.Tests.dll" -Recurse |
+                Where FullName -Like "*bin\$Configuration\*" |
+                where Name -Like "$($package.Name)*" |
+                foreach { $msTestParams = "`"/testcontainer:$($_.FullName)`" $msTestParams" }
+            if ($msTestParams -ne ""){
+                Exec { &$MsTestFile $msTestParams }
+            }
+            Log-Message "All tests for [$($package.Name)] passed." Success
+        }
+        catch [Exception] {
+            Log-Message "Some tests failed for [$($package.Name)]." Error
+        }
     }
+    Set-Location $BuildDir
 }
 
 Task Compile {
-    try {
-        Exec { msbuild $SolutionFile /t:Build /v:minimal /p:Configuration=$Configuration }
-        Log-Message "Compilation was successful." Success
-    } catch [Exception] {
-        Log-Message "Compilation completed with errors" Error
+    foreach ($target in $Targets){
+        try {
+            $package = $Packages.Get_Item($target)
+            $projectPath = "$SrcDir\$($package.Name)\$($package.Name).csproj";
+            $testPath = "$TestDir\$($package.Name).Tests\$($package.Name).Tests.csproj";
+            if (Test-Path $testPath){
+                Exec { msbuild $testPath /t:Rebuild /v:minimal /p:Configuration=$Configuration }  
+            } else {
+                Exec { msbuild $projectPath /t:Build /v:minimal /p:Configuration=$Configuration } 
+            }            
+            Log-Message "Compilation of [$($package.Name)] was successful." Success
+        } catch [Exception] {
+            Log-Message "Compilation of [$($package.Name)] completed with errors" Error
+        }     
     }
 }
 
 Task Clean {
-    if (Test-Path $PackageDir)
+    if (Test-Path $DeployDir)
     {
-        Remove-Item $PackageDir -Force -Recurse
+        Remove-Item $DeployDir -Force -Recurse
     }
     if (Test-Path "$BaseDir\TestResults")
     {
         Remove-Item "$BaseDir\TestResults" -Force -Recurse
     }
-    New-Item -ItemType directory -Path $PackageDir | Out-Null
-    Log-Message "Created distro directory: $PackageDir" Info
+    New-Item -ItemType directory -Path $DeployDir | Out-Null
+    Log-Message "Created deploy directory: $DeployDir" Info
     Exec { msbuild $SolutionFile /target:Clean /property:Configuration=$Configuration /verbosity:quiet }
     Log-Message "Performed clean on VS solution." Info
 }
@@ -100,19 +139,6 @@ Function Log-Message($message, [String]$type = "Info")
     Write-Host $message -ForegroundColor $msgColor -BackgroundColor Black
 }
 
-Function Get-Files([String[]]$patterns, [String]$directory, [String]$configuration)
-{
-    return Get-ChildItem $directory -Recurse -Include $patterns | Where-Object FullName -Like "*\bin\Release\*"
-}
-
-Function Create-NuGetPackageStructure([String]$directory, [String[]] $frameworks)
-{
-    foreach ($framework in $frameworks)
-    {
-        New-Item -ItemType Directory -Path $directory\lib\$framework -Force | Out-Null
-    }
-}
-
 Function Copy-AsNuGetStructure([String]$directory, $frameworkGroups)
 {
     foreach ($frameworkGroup in $frameworkGroups)
@@ -120,7 +146,11 @@ Function Copy-AsNuGetStructure([String]$directory, $frameworkGroups)
         $framework = $frameworkGroup.Name
         foreach($packageFile in $frameworkGroup.Group)
         {
-            Copy-Item -Path $($packageFile.FullName) -Destination $directory\$framework\$($packageFile.Name) -Force
+            $targetFileName = "$directory\$framework\$($packageFile.Name)"
+            if (!(Test-Path $targetFileName)){
+                New-Item $targetFileName -ItemType File -Force | Out-Null
+            }
+            Copy-Item -Path $($packageFile.FullName) -Destination $targetFileName
         }
     }
 }

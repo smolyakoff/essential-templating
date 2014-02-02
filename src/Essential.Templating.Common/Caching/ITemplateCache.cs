@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
+using Essential.Templating.Common.Contracts;
 
 namespace Essential.Templating.Common.Caching
 {
-    internal interface ITemplateCache<T>
+    [ContractClass(typeof(TemplateCacheContracts<>))]
+    public interface ITemplateCache<T>
     {
         bool ContainsKey(string path);
 

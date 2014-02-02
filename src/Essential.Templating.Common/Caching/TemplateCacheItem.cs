@@ -2,7 +2,7 @@
 
 namespace Essential.Templating.Common.Caching
 {
-    internal class TemplateCacheItem<T>
+    public class TemplateCacheItem<T>
     {
         private readonly string _path;
 

@@ -1,8 +1,8 @@
 ﻿namespace Essential.Templating.Common.Caching
 {
-    internal static class CachePolicyExtensions
+    public static class CachePolicyExtensions
     {
-        internal static ITemplateCache<T> GetCache<T>(this CachePolicy cachePolicy)
+        public static ITemplateCache<T> GetCache<T>(this CachePolicy cachePolicy)
         {
             switch (cachePolicy)
             {

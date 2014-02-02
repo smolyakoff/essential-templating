@@ -52,7 +52,7 @@ Task Package -Depends Clean, Versioning, Test {
         New-Item $packageDir\$($package.Name).nuspec -Force -ItemType File | Out-Null
         Copy-Item -Path $BuildDir\$($package.Name).nuspec.tmpl -Destination $packageDir\$($package.Name).nuspec -Force -Recurse
         $frameworkGroups = Get-ChildItem -Path $SrcDir -Include @("$($package.Name)*.dll", "$($package.Name)*.xml", "$($package.Name)*.pdb") -Recurse |
-            where FullName -like "*\bin\$Configuration\*" |
+            where FullName -like "*\$($package.Name)\bin\$Configuration\*" |
             group { $_.Directory.Name }
         Copy-AsNuGetStructure $packageDir\lib $frameworkGroups
         Exec { &$NuGetFile pack $packageDir\$($package.Name).nuspec -OutputDirectory $packageDir }
@@ -103,7 +103,7 @@ Task Compile {
             if (Test-Path $testPath){
                 Exec { msbuild $testPath /t:Rebuild /v:minimal /p:Configuration=$Configuration }  
             } else {
-                Exec { msbuild $projectPath /t:Build /v:minimal /p:Configuration=$Configuration } 
+                Exec { msbuild $projectPath /t:Rebuild /v:minimal /p:Configuration=$Configuration } 
             }            
             Log-Message "Compilation of [$($package.Name)] was successful." Success
         } catch [Exception] {
@@ -143,7 +143,12 @@ Function Copy-AsNuGetStructure([String]$directory, $frameworkGroups)
 {
     foreach ($frameworkGroup in $frameworkGroups)
     {
-        $framework = $frameworkGroup.Name
+        if ($frameworkGroup.Name -eq "CodeContracts"){
+            $framework = $frameworkGroup.Group[0].Directory.Parent.Name;
+        } else {
+            $framework = $frameworkGroup.Name
+        }
+
         foreach($packageFile in $frameworkGroup.Group)
         {
             $targetFileName = "$directory\$framework\$($packageFile.Name)"

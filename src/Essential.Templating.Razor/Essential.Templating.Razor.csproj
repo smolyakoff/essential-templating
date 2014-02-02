@@ -4,21 +4,20 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{AD3C1010-D933-421C-BF15-945C0E2B4837}</ProjectGuid>
+    <ProjectGuid>{C17C0142-CC03-4750-A7DA-240072498F7E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Essential.Templating.Common</RootNamespace>
-    <AssemblyName>Essential.Templating.Common</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <RootNamespace>Essential.Templating.Razor</RootNamespace>
+    <AssemblyName>Essential.Templating.Razor</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\NET40\</OutputPath>
+    <OutputPath>bin\Debug\NET45\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -60,7 +59,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\NET40\</OutputPath>
+    <OutputPath>bin\Release\NET45\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -98,43 +97,62 @@
     <CodeContractsRuntimeCheckingLevel>ReleaseRequires</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
-    <DocumentationFile>
-    </DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="RazorEngine">
+      <HintPath>..\..\packages\RazorEngine.3.4.1\lib\net45\RazorEngine.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.AspNet.Razor.3.1.0\lib\net45\System.Web.Razor.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Caching\CachePolicy.cs" />
-    <Compile Include="Caching\CachePolicyExtensions.cs" />
-    <Compile Include="Caching\GlobalTemplateCache.cs" />
-    <Compile Include="Caching\ITemplateCache.cs" />
-    <Compile Include="Caching\LocalTemplateCache.cs" />
-    <Compile Include="Caching\LocalTemplateCacheItem.cs" />
-    <Compile Include="Caching\TemplateCacheItem.cs" />
-    <Compile Include="Configuration\ConfigurationException.cs" />
-    <Compile Include="Configuration\TemplateEngineBuilder.cs" />
-    <Compile Include="Configuration\TemplateEngineBuilderExtensions.cs" />
-    <Compile Include="Configuration\TemplateEngineConfiguration.cs" />
-    <Compile Include="Contracts\RendererContracts.cs" />
-    <Compile Include="Contracts\ResourceProviderContracts.cs" />
-    <Compile Include="Contracts\TemplateCacheContracts.cs" />
-    <Compile Include="Contracts\TemplateEngineContracts.cs" />
-    <Compile Include="ITemplateEngine.cs" />
+    <Compile Include="Compilation\CompilationException.cs" />
+    <Compile Include="Compilation\CSharpTemplateCompiler.cs" />
+    <Compile Include="Compilation\ITemplateCompiler.cs" />
+    <Compile Include="Compilation\TemplateServiceExtensions.cs" />
+    <Compile Include="Compilation\VBTemplateCompiler.cs" />
+    <Compile Include="Configuration\RazorTemplateEngineBuilder.cs" />
+    <Compile Include="Configuration\RazorTemplateEngineConfiguration.cs" />
+    <Compile Include="Contracts\TemplateFactoryContracts.cs" />
+    <Compile Include="ExecuteContextAdapter.cs" />
+    <Compile Include="ExposingTemplate%271.cs" />
+    <Compile Include="ExposingTemplate.cs" />
+    <Compile Include="IExposingTemplate.cs" />
+    <Compile Include="ITemplateTool.cs" />
+    <Compile Include="ITemplateVisitor.cs" />
+    <Compile Include="Rendering\ObjectViewBag.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Rendering\IRenderer.cs" />
-    <Compile Include="Storage\FileSystemResourceProvider.cs" />
-    <Compile Include="Storage\IResourceProvider.cs" />
-    <Compile Include="Storage\LocalizedName.cs" />
-    <Compile Include="Storage\ResxClassResourceProvider.cs" />
-    <Compile Include="Storage\Streamer.cs" />
-    <Compile Include="TemplateEngineException.cs" />
+    <Compile Include="Rendering\StringRenderer.cs" />
+    <Compile Include="Runtime\ActivatorException.cs" />
+    <Compile Include="Runtime\ITemplateFactory.cs" />
+    <Compile Include="Runtime\ReflectionTemplateFactory.cs" />
+    <Compile Include="Runtime\TemplateActivator.cs" />
+    <Compile Include="Runtime\TypeMismatchException.cs" />
+    <Compile Include="Template%271.cs" />
+    <Compile Include="Template.cs" />
+    <Compile Include="TemplateContext.cs" />
+    <Compile Include="RazorTemplateEngine.Async.cs" />
+    <Compile Include="RazorTemplateEngine.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Essential.Templating.Common\Essential.Templating.Common.csproj">
+      <Project>{ad3c1010-d933-421c-bf15-945c0e2b4837}</Project>
+      <Name>Essential.Templating.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

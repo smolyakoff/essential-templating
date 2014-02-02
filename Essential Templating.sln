@@ -17,20 +17,20 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{C99EF350
 		build\clean.ps1 = build\clean.ps1
 		build\default.ps1 = build\default.ps1
 		build\Essential.Templating.Common.nuspec.tmpl = build\Essential.Templating.Common.nuspec.tmpl
-		build\Essential.Templating.nuspec.tmpl = build\Essential.Templating.nuspec.tmpl
+		build\Essential.Templating.Razor.nuspec.tmpl = build\Essential.Templating.Razor.nuspec.tmpl
 		build\publish.bat = build\publish.bat
 		build\publish.ps1 = build\publish.ps1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source Code", "Source Code", "{4A865BEC-0C73-46DB-B114-E4D6FE6C7CE8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Templating", "src\Essential.Templating\Essential.Templating.csproj", "{8AF3D03A-6DB0-4621-AFD0-DAFC6BC8033F}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Templating.Tests", "test\Essential.Templating.Tests\Essential.Templating.Tests.csproj", "{F30322C7-B296-4928-A636-08300F0E030E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Templating.Common", "src\Essential.Templating.Common\Essential.Templating.Common.csproj", "{AD3C1010-D933-421C-BF15-945C0E2B4837}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Templating.Common.Tests", "test\Essential.Templating.Common.Tests\Essential.Templating.Common.Tests.csproj", "{EF212FCB-1825-438D-8CF9-303FF80B1772}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Templating.Razor", "src\Essential.Templating.Razor\Essential.Templating.Razor.csproj", "{C17C0142-CC03-4750-A7DA-240072498F7E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Templating.Razor.Tests", "test\Essential.Templating.Razor.Tests\Essential.Templating.Razor.Tests.csproj", "{59FDEAD9-9FFA-4317-B559-1D70591F44C1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,14 +38,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{8AF3D03A-6DB0-4621-AFD0-DAFC6BC8033F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8AF3D03A-6DB0-4621-AFD0-DAFC6BC8033F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8AF3D03A-6DB0-4621-AFD0-DAFC6BC8033F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8AF3D03A-6DB0-4621-AFD0-DAFC6BC8033F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F30322C7-B296-4928-A636-08300F0E030E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F30322C7-B296-4928-A636-08300F0E030E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F30322C7-B296-4928-A636-08300F0E030E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F30322C7-B296-4928-A636-08300F0E030E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{AD3C1010-D933-421C-BF15-945C0E2B4837}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AD3C1010-D933-421C-BF15-945C0E2B4837}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD3C1010-D933-421C-BF15-945C0E2B4837}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -54,14 +46,22 @@ Global
 		{EF212FCB-1825-438D-8CF9-303FF80B1772}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF212FCB-1825-438D-8CF9-303FF80B1772}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF212FCB-1825-438D-8CF9-303FF80B1772}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C17C0142-CC03-4750-A7DA-240072498F7E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C17C0142-CC03-4750-A7DA-240072498F7E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C17C0142-CC03-4750-A7DA-240072498F7E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C17C0142-CC03-4750-A7DA-240072498F7E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59FDEAD9-9FFA-4317-B559-1D70591F44C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59FDEAD9-9FFA-4317-B559-1D70591F44C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59FDEAD9-9FFA-4317-B559-1D70591F44C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59FDEAD9-9FFA-4317-B559-1D70591F44C1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{8AF3D03A-6DB0-4621-AFD0-DAFC6BC8033F} = {4A865BEC-0C73-46DB-B114-E4D6FE6C7CE8}
-		{F30322C7-B296-4928-A636-08300F0E030E} = {4A865BEC-0C73-46DB-B114-E4D6FE6C7CE8}
 		{AD3C1010-D933-421C-BF15-945C0E2B4837} = {4A865BEC-0C73-46DB-B114-E4D6FE6C7CE8}
 		{EF212FCB-1825-438D-8CF9-303FF80B1772} = {4A865BEC-0C73-46DB-B114-E4D6FE6C7CE8}
+		{C17C0142-CC03-4750-A7DA-240072498F7E} = {4A865BEC-0C73-46DB-B114-E4D6FE6C7CE8}
+		{59FDEAD9-9FFA-4317-B559-1D70591F44C1} = {4A865BEC-0C73-46DB-B114-E4D6FE6C7CE8}
 	EndGlobalSection
 EndGlobal

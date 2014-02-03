@@ -14,12 +14,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{C99EF350
 		build\build.bat = build\build.bat
 		build\build.ps1 = build\build.ps1
 		build\clean.bat = build\clean.bat
-		build\clean.ps1 = build\clean.ps1
 		build\default.ps1 = build\default.ps1
 		build\Essential.Templating.Common.nuspec.tmpl = build\Essential.Templating.Common.nuspec.tmpl
 		build\Essential.Templating.Razor.nuspec.tmpl = build\Essential.Templating.Razor.nuspec.tmpl
 		build\publish.bat = build\publish.bat
-		build\publish.ps1 = build\publish.ps1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source Code", "Source Code", "{4A865BEC-0C73-46DB-B114-E4D6FE6C7CE8}"

@@ -1,2 +1,14 @@
+Param
+(
+    [String] $TaskName = "Package"
+)
 Import-Module ..\tools\psake\psake.psm1
-Invoke-Psake -Properties @{ Targets = @("Common", "Razor") }
+Invoke-Psake -Task $TaskName -Properties @{ Targets = @("Common", "Razor") }
+Write-Host `r`nPress any key to continue... -BackgroundColor Blue
+try 
+{
+    $host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown") | Out-Null
+}
+catch [Exception]
+{
+}

@@ -2,6 +2,6 @@
 {
     public interface IExposingTemplate
     {
-        void Run(ITemplateVisitor templateVisitor);
+        void Run(ITemplateVisitor templateVisitor, object viewBag);
     }
 }

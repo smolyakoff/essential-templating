@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Templating.Razor"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Templating.Razor.Tests", "test\Essential.Templating.Razor.Tests\Essential.Templating.Razor.Tests.csproj", "{59FDEAD9-9FFA-4317-B559-1D70591F44C1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Templating.Razor.Email", "src\Essential.Templating.Razor.Email\Essential.Templating.Razor.Email.csproj", "{364E2420-2F46-4FDD-B86B-4DC694470155}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -52,6 +54,10 @@ Global
 		{59FDEAD9-9FFA-4317-B559-1D70591F44C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59FDEAD9-9FFA-4317-B559-1D70591F44C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59FDEAD9-9FFA-4317-B559-1D70591F44C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{364E2420-2F46-4FDD-B86B-4DC694470155}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{364E2420-2F46-4FDD-B86B-4DC694470155}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{364E2420-2F46-4FDD-B86B-4DC694470155}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{364E2420-2F46-4FDD-B86B-4DC694470155}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -61,5 +67,6 @@ Global
 		{EF212FCB-1825-438D-8CF9-303FF80B1772} = {4A865BEC-0C73-46DB-B114-E4D6FE6C7CE8}
 		{C17C0142-CC03-4750-A7DA-240072498F7E} = {4A865BEC-0C73-46DB-B114-E4D6FE6C7CE8}
 		{59FDEAD9-9FFA-4317-B559-1D70591F44C1} = {4A865BEC-0C73-46DB-B114-E4D6FE6C7CE8}
+		{364E2420-2F46-4FDD-B86B-4DC694470155} = {4A865BEC-0C73-46DB-B114-E4D6FE6C7CE8}
 	EndGlobalSection
 EndGlobal

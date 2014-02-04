@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Text;
+using Essential.Templating.Razor.Rendering;
 using RazorEngine.Templating;
 
 namespace Essential.Templating.Razor
@@ -20,12 +21,12 @@ namespace Essential.Templating.Razor
             Contract.Requires<ArgumentNullException>(templateContext != null);
         }
 
-        void IExposingTemplate.Run(ITemplateVisitor templateVisitor)
+        void IExposingTemplate.Run(ITemplateVisitor templateVisitor, object viewBag)
         {
             lock (_syncRoot)
             {
                 _templateVisitor = templateVisitor;
-                var body = ((ITemplate) this).Run(new ExecuteContext(new DynamicViewBag()));
+                var body = ((ITemplate) this).Run(new ExecuteContext(new ObjectViewBag(viewBag)));
                 _templateVisitor.Body(body);
                 _templateVisitor = null;
             }

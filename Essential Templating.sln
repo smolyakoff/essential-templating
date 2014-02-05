@@ -32,6 +32,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Templating.Razor.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Templating.Razor.Email", "src\Essential.Templating.Razor.Email\Essential.Templating.Razor.Email.csproj", "{364E2420-2F46-4FDD-B86B-4DC694470155}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Essential.Templating.Razor.Email.Tests", "test\Essential.Templating.Razor.Email.Tests\Essential.Templating.Razor.Email.Tests.csproj", "{DA260CA0-40BE-4F1F-9772-DE9A03404692}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{364E2420-2F46-4FDD-B86B-4DC694470155}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{364E2420-2F46-4FDD-B86B-4DC694470155}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{364E2420-2F46-4FDD-B86B-4DC694470155}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA260CA0-40BE-4F1F-9772-DE9A03404692}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA260CA0-40BE-4F1F-9772-DE9A03404692}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA260CA0-40BE-4F1F-9772-DE9A03404692}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA260CA0-40BE-4F1F-9772-DE9A03404692}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -68,5 +74,6 @@ Global
 		{C17C0142-CC03-4750-A7DA-240072498F7E} = {4A865BEC-0C73-46DB-B114-E4D6FE6C7CE8}
 		{59FDEAD9-9FFA-4317-B559-1D70591F44C1} = {4A865BEC-0C73-46DB-B114-E4D6FE6C7CE8}
 		{364E2420-2F46-4FDD-B86B-4DC694470155} = {4A865BEC-0C73-46DB-B114-E4D6FE6C7CE8}
+		{DA260CA0-40BE-4F1F-9772-DE9A03404692} = {4A865BEC-0C73-46DB-B114-E4D6FE6C7CE8}
 	EndGlobalSection
 EndGlobal

@@ -1,0 +1,12 @@
+﻿@inherits Essential.Templating.Razor.Email.EmailTemplate
+@section Html
+{
+    <html>
+        <head>
+            <title>@ViewBag.Title</title>
+        </head>
+        <body>
+            @RenderSection("Content")
+        </body>
+    </html>
+}

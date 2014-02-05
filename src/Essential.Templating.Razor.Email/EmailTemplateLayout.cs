@@ -1,13 +1,15 @@
-﻿using RazorEngine.Templating;
-
-namespace Essential.Templating.Razor.Email
+﻿namespace Essential.Templating.Razor.Email
 {
-    internal class EmailTemplateLayout : TemplateBase
+    internal class EmailTemplateLayout : ExposingTemplate
     {
+        public EmailTemplateLayout(TemplateContext templateContext) : base(templateContext)
+        {
+        }
+
         public override void Execute()
         {
-            RenderSection(Conventions.HtmlSectionName);
-            RenderSection(Conventions.TextSectionName);
+            RenderSection(Conventions.HtmlSectionName, false);
+            RenderSection(Conventions.TextSectionName, false);
         }
     }
 }

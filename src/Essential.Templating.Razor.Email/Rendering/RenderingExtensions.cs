@@ -33,6 +33,7 @@ namespace Essential.Templating.Razor.Email.Rendering
             message.Subject = template.Subject;
             message.SubjectEncoding = template.SubjectEncoding;
             message.To.CopyFrom(template.To);
+            visitor.CopyTo(message);
             return message;
         }
 

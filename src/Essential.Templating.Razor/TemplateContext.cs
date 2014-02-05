@@ -46,5 +46,10 @@ namespace Essential.Templating.Razor
             var template = _templateTool.Resolve(path, culture, model);
             return template == null ? null : _templateTool.RenderString(template);
         }
+
+        internal ITemplateTool TemplateTool
+        {
+            get { return _templateTool; }
+        }
     }
 }

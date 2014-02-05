@@ -1,0 +1,12 @@
+﻿@inherits Essential.Templating.Razor.Email.EmailTemplate<Essential.Templating.Razor.Email.Tests.Car>
+@{
+    Layout = "EmailLayout.cshtml";
+    ViewBag.Title = "Car Email";       
+}
+@section Content
+{
+    <h1>Make</h1>
+    <p>@Model.Make</p>
+    <h1>Model</h1>
+    <p>@Model.Model</p>
+}

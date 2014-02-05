@@ -42,7 +42,7 @@ namespace Essential.Templating.Razor.Email.Rendering
         public void CopyTo(MailMessage mailMessage)
         {
             Contract.Requires(mailMessage != null);
-            if (!string.IsNullOrEmpty(_html) && !string.IsNullOrEmpty(_text))
+            if (string.IsNullOrEmpty(_html) && string.IsNullOrEmpty(_text))
             {
                 mailMessage.IsBodyHtml = false;
                 mailMessage.Body = _body;

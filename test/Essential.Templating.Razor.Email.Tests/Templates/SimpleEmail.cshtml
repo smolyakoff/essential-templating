@@ -1,0 +1,14 @@
+﻿@using System.Net.Mail
+@inherits Essential.Templating.Razor.Email.EmailTemplate
+@{
+    From = new MailAddress("test@email.com");
+    Subject = "Simple Email";
+}
+@section Html 
+{
+  <p>Hooray! HTML content is placed here!</p>   
+}
+@section Text
+{
+    Plain text is placed here!
+}

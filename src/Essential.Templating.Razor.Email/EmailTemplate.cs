@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Diagnostics.Contracts;
 using System.Net.Mail;
 using System.Net.Mime;
 using System.Text;
@@ -12,6 +14,8 @@ namespace Essential.Templating.Razor.Email
     {
         public EmailTemplate(TemplateContext templateContext) : base(templateContext)
         {
+            Contract.Requires<ArgumentNullException>(templateContext != null);
+
             Attachments = new Collection<Attachment>();
             Bcc = new MailAddressCollection();
             BodyEncoding = Encoding.UTF8;
@@ -59,7 +63,7 @@ namespace Essential.Templating.Razor.Email
         protected override ITemplate ResolveLayout(string name)
         {
             return string.IsNullOrEmpty(Layout) 
-                ? new EmailTemplateLayout() 
+                ? new EmailTemplateLayout(DeriveContext(this.GetType().FullName)) 
                 : base.ResolveLayout(name);
         }
     }

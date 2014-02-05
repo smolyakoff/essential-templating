@@ -64,5 +64,11 @@ namespace Essential.Templating.Razor
 
             return _templateContext.ResourceProvider.Get(uri, culture);
         }
+
+        protected TemplateContext DeriveContext(string path)
+        {
+            Contract.Requires(!string.IsNullOrEmpty(path));
+            return new TemplateContext(path, _templateContext.Culture, _templateContext.ResourceProvider, _templateContext.TemplateTool);
+        }
     }
 }

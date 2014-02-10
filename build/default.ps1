@@ -16,10 +16,11 @@ Properties {
     $CurrentVersion = ""
     $Packages = @{
         "Common" = @{ Name = "Essential.Templating.Common" };
-        "Razor" = @{ Name = "Essential.Templating.Razor" }
+        "Razor" = @{ Name = "Essential.Templating.Razor" };
+        "Razor.Email" = @{ Name = "Essential.Templating.Razor.Email" }
     }
     if (!$Targets){
-        $Targets = $("Common", "Razor")
+        $Targets = $("Common", "Razor", "Razor.Email")
     }
 }
 
@@ -80,7 +81,7 @@ Task Test -Depends Compile {
             $msTestParams = ""
             Get-ChildItem -Path $TestDir -Include "*.Tests.dll" -Recurse |
                 Where FullName -Like "*bin\$Configuration\*" |
-                where Name -Like "$($package.Name)*" |
+                where Name -Like "$($package.Name).Tests.dll" |
                 foreach { $msTestParams = "`"/testcontainer:$($_.FullName)`" $msTestParams" }
             if ($msTestParams -ne ""){
                 Exec { &$MsTestFile $msTestParams }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Net.Mail;
@@ -15,6 +16,7 @@ namespace Essential.Templating.Razor.Email
         {
             Contract.Requires<ArgumentNullException>(templateEngine != null);
             Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(path));
+            Contract.Requires<NotSupportedException>(templateEngine.GetType() == typeof(RazorTemplateEngine), "Only razor engine is supported.");
 
             return templateEngine.Render(path, renderer: new EmailRenderer(), viewBag: viewBag, culture: culture);
         }
@@ -25,6 +27,7 @@ namespace Essential.Templating.Razor.Email
         {
             Contract.Requires<ArgumentNullException>(templateEngine != null);
             Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(path));
+            Contract.Requires<NotSupportedException>(templateEngine.GetType() == typeof(RazorTemplateEngine), "Only razor engine is supported.");
 
             return templateEngine.Render(path, renderer: new EmailRenderer(), model: model, viewBag: viewBag, culture: culture);
         }
@@ -34,6 +37,7 @@ namespace Essential.Templating.Razor.Email
         {
             Contract.Requires<ArgumentNullException>(templateEngine != null);
             Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(path));
+            Contract.Requires<NotSupportedException>(templateEngine.GetType() == typeof(RazorTemplateEngine), "Only razor engine is supported.");
 
             return templateEngine.RenderAsync(path, renderer: new EmailRenderer(), viewBag: viewBag, culture: culture);
         }
@@ -44,6 +48,7 @@ namespace Essential.Templating.Razor.Email
         {
             Contract.Requires<ArgumentNullException>(templateEngine != null);
             Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(path));
+            Contract.Requires<NotSupportedException>(templateEngine.GetType() == typeof(RazorTemplateEngine), "Only razor engine is supported.");
 
             return templateEngine.RenderAsync(path, renderer: new EmailRenderer(), model: model, viewBag: viewBag, culture: culture);
         }

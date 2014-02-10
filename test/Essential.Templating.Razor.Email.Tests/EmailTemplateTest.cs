@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Essential.Templating.Common;
 using Essential.Templating.Common.Configuration;
@@ -43,10 +44,21 @@ namespace Essential.Templating.Razor.Email.Tests
             var email = _templateEngine.RenderEmailAsync("CarMail.cshtml", model: car).Result;
 
             Assert.IsTrue(email != null);
-            Debug.WriteLine(email.Body);
-            Assert.IsTrue(email.Body.Contains("Car Email"));
-            Assert.IsTrue(email.Body.Contains("Ford"));
-            Assert.IsTrue(email.Body.Contains("Mustang"));
+            var body = email.AlternateViews[0].ContentStream.AsString();
+            Debug.WriteLine(body);
+            Assert.IsTrue(body.Contains("Car Email"));
+            Assert.IsTrue(body.Contains("Ford"));
+            Assert.IsTrue(body.Contains("Mustang"));
+        }
+
+        [TestMethod]
+        public void RenderEmailWithLinkedResource()
+        {
+            var email = _templateEngine.RenderEmail("ImageEmail.cshtml");
+            Assert.IsTrue(email != null);
+            var body = email.AlternateViews[0].ContentStream.AsString();
+            Debug.WriteLine(body);
+            Assert.IsTrue(email.AlternateViews[0].LinkedResources.Any());
         }
     }
 }

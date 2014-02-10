@@ -116,6 +116,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Compilation\BaseTemplateCompiler.cs" />
     <Compile Include="Compilation\CompilationException.cs" />
     <Compile Include="Compilation\CSharpTemplateCompiler.cs" />
     <Compile Include="Compilation\ITemplateCompiler.cs" />

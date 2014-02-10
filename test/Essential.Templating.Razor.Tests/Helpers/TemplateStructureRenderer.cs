@@ -8,7 +8,7 @@ namespace Essential.Templating.Razor.Tests.Helpers
         {
             var visitor = new TemplateStructureVisitor();
             var exposingTemplate = (IExposingTemplate) template;
-            exposingTemplate.Run(visitor);
+            exposingTemplate.Run(visitor, viewBag);
             return visitor.TemplateStructure;
         }
     }

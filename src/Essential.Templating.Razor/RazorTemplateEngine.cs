@@ -139,6 +139,13 @@ namespace Essential.Templating.Razor
             }
         }
 
+        public bool EnsureNamespace(string @namespace)
+        {
+            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(@namespace));
+
+            return _compiler.EnsureNamespace(@namespace);
+        }
+
         private Template ResolveTemplate(string path, CultureInfo culture)
         {
             var type = ResolveTemplateType(path, culture);

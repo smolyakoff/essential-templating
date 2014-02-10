@@ -6,7 +6,7 @@ namespace Essential.Templating.Razor.Compilation
 {
     internal interface ITemplateCompiler
     {
-        void AddNamespace(string @namespace);
+        bool EnsureNamespace(string @namespace);
 
         Type Compile(Stream razorTemplate);
 

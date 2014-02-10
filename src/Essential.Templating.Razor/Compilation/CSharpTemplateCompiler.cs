@@ -7,42 +7,16 @@ using RazorEngine.Templating;
 
 namespace Essential.Templating.Razor.Compilation
 {
-    internal class CSharpTemplateCompiler : ITemplateCompiler
+    internal class CSharpTemplateCompiler : BaseTemplateCompiler
     {
-        private readonly TemplateService _razorService;
-
         public CSharpTemplateCompiler()
-        {
-            _razorService = new TemplateService(new TemplateServiceConfiguration
+            : base(new TemplateService(new TemplateServiceConfiguration()
             {
                 Language = Language.CSharp,
-                BaseTemplateType = typeof (Template)
-            });
-        }
-
-        public void AddNamespace(string @namespace)
+                BaseTemplateType = typeof(Template)
+            }))
         {
-            _razorService.AddNamespace(@namespace);
-        }
-
-        public Type Compile(Stream razorTemplate)
-        {
-            return _razorService.Compile(razorTemplate, null);
-        }
-
-        public Type Compile(Stream razorTemplate, Type modelType)
-        {
-            return _razorService.Compile(razorTemplate, modelType);
-        }
-
-        public Task<Type> CompileAsync(Stream razorTemplate)
-        {
-            return _razorService.CompileAsync(razorTemplate, null);
-        }
-
-        public Task<Type> CompileAsync(Stream razorTemplate, Type modelType)
-        {
-            return _razorService.CompileAsync(razorTemplate, modelType);
+            
         }
     }
 }

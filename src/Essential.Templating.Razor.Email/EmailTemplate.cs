@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Diagnostics.Contracts;
+using System.Globalization;
+using System.IO;
 using System.Net.Mail;
 using System.Net.Mime;
 using System.Text;
+using Essential.Templating.Razor.Email.Helpers;
 using RazorEngine.Templating;
 
 namespace Essential.Templating.Razor.Email
@@ -24,10 +27,12 @@ namespace Essential.Templating.Razor.Email
             DeliveryNotificationOptions = DeliveryNotificationOptions.None;
             Headers = new NameValueCollection();
             HeadersEncoding = Encoding.UTF8;
+            LinkedResources = new Collection<LinkedResource>();
             Priority = MailPriority.Normal;
             ReplyToList = new MailAddressCollection();
             To = new MailAddressCollection();
             SubjectEncoding = Encoding.UTF8;
+            Resource = new ResourceTemplateHelper(this, templateContext);
         }
 
         public ICollection<Attachment> Attachments { get; private set; }
@@ -48,6 +53,8 @@ namespace Essential.Templating.Razor.Email
 
         public Encoding HeadersEncoding { get; set; }
 
+        public ICollection<LinkedResource> LinkedResources { get; private set; } 
+
         public MailPriority Priority { get; set; }
 
         public MailAddressCollection ReplyToList { get; private set; }
@@ -59,6 +66,8 @@ namespace Essential.Templating.Razor.Email
         public Encoding SubjectEncoding { get; set; }
 
         public MailAddressCollection To { get; private set; }
+
+        public ResourceTemplateHelper Resource { get; private set; }
 
         protected override ITemplate ResolveLayout(string name)
         {

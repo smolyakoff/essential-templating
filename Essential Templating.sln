@@ -16,6 +16,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{C99EF350
 		build\clean.bat = build\clean.bat
 		build\default.ps1 = build\default.ps1
 		build\Essential.Templating.Common.nuspec.tmpl = build\Essential.Templating.Common.nuspec.tmpl
+		build\Essential.Templating.Razor.Email.nuspec.tmpl = build\Essential.Templating.Razor.Email.nuspec.tmpl
 		build\Essential.Templating.Razor.nuspec.tmpl = build\Essential.Templating.Razor.nuspec.tmpl
 		build\publish.bat = build\publish.bat
 	EndProjectSection

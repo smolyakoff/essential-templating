@@ -1,0 +1,15 @@
+﻿@using System.Globalization
+@using System.Net.Mime
+@using Essential.Templating.Razor.Email.Helpers
+@inherits Essential.Templating.Razor.Email.EmailTemplate
+@section Html
+{
+    <html>
+        <head>
+            <title>Image Email</title>
+        </head>
+        <body>
+            <img src="@Resource.Link("image.jpg", "img", "image/jpeg", TransferEncoding.Base64, CultureInfo.InvariantCulture)"/>
+        </body>
+    </html>
+}

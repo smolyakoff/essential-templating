@@ -122,6 +122,9 @@
     <Compile Include="EmailTemplate%271.cs" />
     <Compile Include="EmailTemplate.cs" />
     <Compile Include="EmailTemplateLayout.cs" />
+    <Compile Include="Helpers\ResourceTemplateHelper.cs" />
+    <Compile Include="Helpers\ResourceTemplateHelperExtensions.cs" />
+    <Compile Include="Helpers\TemplateHelperException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\EmailRenderer.cs" />
     <Compile Include="Rendering\EmailTemplateVisitor.cs" />

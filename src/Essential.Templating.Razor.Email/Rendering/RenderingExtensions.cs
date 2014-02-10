@@ -34,10 +34,14 @@ namespace Essential.Templating.Razor.Email.Rendering
             message.SubjectEncoding = template.SubjectEncoding;
             message.To.CopyFrom(template.To);
             visitor.CopyTo(message);
+            if (template.LinkedResources.Count > 0 && message.AlternateViews.Count > 0)
+            {
+                message.AlternateViews[0].LinkedResources.CopyFrom(template.LinkedResources);
+            } 
             return message;
         }
 
-        private static void CopyTo<T>(this IEnumerable<T> source, ICollection<T> destination)
+        internal static void CopyTo<T>(this IEnumerable<T> source, ICollection<T> destination)
         {
             Contract.Requires(source != null);
             Contract.Requires(destination != null);
@@ -48,7 +52,7 @@ namespace Essential.Templating.Razor.Email.Rendering
             }
         }
 
-        private static void CopyFrom<T>(this ICollection<T> destination, IEnumerable<T> source)
+        internal static void CopyFrom<T>(this ICollection<T> destination, IEnumerable<T> source)
         {
             Contract.Requires(source != null);
             Contract.Requires(destination != null);

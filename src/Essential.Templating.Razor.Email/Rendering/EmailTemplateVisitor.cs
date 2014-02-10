@@ -1,4 +1,6 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Diagnostics.Contracts;
 using System.Net.Mail;
 
 namespace Essential.Templating.Razor.Email.Rendering
@@ -10,6 +12,8 @@ namespace Essential.Templating.Razor.Email.Rendering
         private string _html;
 
         private string _text;
+
+        private readonly ICollection<LinkedResource> _linkedResources = new Collection<LinkedResource>();
 
         public void Body(string text)
         {
@@ -49,8 +53,10 @@ namespace Essential.Templating.Razor.Email.Rendering
             } 
             else if (!string.IsNullOrEmpty(_html) && string.IsNullOrEmpty(_text))
             {
-                mailMessage.IsBodyHtml = true;
-                mailMessage.Body = _html;
+                mailMessage.IsBodyHtml = false;
+                var htmlView = AlternateView.CreateAlternateViewFromString(_html, mailMessage.BodyEncoding, "text/html");
+                htmlView.LinkedResources.CopyFrom(_linkedResources);
+                mailMessage.AlternateViews.Add(htmlView);
             }
             else if (string.IsNullOrEmpty(_html) && !string.IsNullOrEmpty(_text))
             {
@@ -62,6 +68,7 @@ namespace Essential.Templating.Razor.Email.Rendering
                 mailMessage.IsBodyHtml = false;
                 mailMessage.Body = _text;
                 var htmlView = AlternateView.CreateAlternateViewFromString(_html, mailMessage.BodyEncoding, "text/html");
+                htmlView.LinkedResources.CopyFrom(_linkedResources);
                 mailMessage.AlternateViews.Add(htmlView);
             }
         }

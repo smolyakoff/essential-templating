@@ -1,4 +1,6 @@
-﻿using RazorEngine.Templating;
+﻿using System;
+using System.Diagnostics.Contracts;
+using RazorEngine.Templating;
 
 namespace Essential.Templating.Razor.Email
 {
@@ -6,6 +8,7 @@ namespace Essential.Templating.Razor.Email
     {
         public EmailTemplate(TemplateContext templateContext) : base(templateContext)
         {
+            Contract.Requires<ArgumentNullException>(templateContext != null);
         }
 
         public T Model { get; set; }

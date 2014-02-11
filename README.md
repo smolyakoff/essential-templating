@@ -1,31 +1,40 @@
 Essential Templating
 =========
 
-Essential.Templating is a wrapper library for [RazorEngine by Antaris]
-
+Essential Templating is a set of libraries to render templated objects (like web pages or emails).
   - Provides easy to use template engine interface with C# 5.0 async methods.
-  - Supports layouts out of the box.
+  - Unified template location (now you can use  files or .resx resources).
   - Localization support.
 
-Example
+Essential.Templating.Razor
 ------------
-Assume that we have a following template in "Hello.cshtml" file inside "Templates" directory:
+Template engine implementation based on [RazorEngine by Antaris]
+
+**Basic usage**
+Template is located in "Hello.cshtml" file under "Templates" directory.
+
 ```html
-@inherits Essential.Templating.Template
+@inherits Essential.Templating.Razor.Template
 Hello, @ViewBag.Name!
 ```
+
 How to render the template?
+
 ```csharp
-var engine = new TemplateEngineBuilder()
+ITemplateEngine engine = new RazorTemplateEngineBuilder()
                 .FindTemplatesInDirectory("Templates")
                 .CacheExpiresIn(TimeSpan.FromSeconds(20))
                 .UseSharedCache()
                 .Build();
-var template = engine.Render(path: "Hello.cshtml", viewBag: new {Name = "John"});
+string template = engine.Render(path: "Hello.cshtml", viewBag: new {Name = "John"});
 ```
-What will we get as a result?
 
+What will we get as a result?
 `Hello, John!` 
+
+Essential.Templating.Razor.Email
+---------------------------------------
+Render razor pages as emails. See more at [wiki](https://github.com/smolyakoff/essential-templating/wiki/Email-Template-with-Razor).
 
 *To be continued...*
 [RazorEngine by Antaris]:https://github.com/Antaris/RazorEngine

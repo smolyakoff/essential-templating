@@ -68,7 +68,7 @@ Task Versioning {
         [Xml]$nuspec = Get-Content $BuildDir\$packageName.nuspec.tmpl
         Log-Message "Changing [$packageName] assemblies version to $($nuspec.package.metadata.version)."
         Get-ChildItem $SrcDir -Include "AssemblyInfo.cs" -Recurse |
-            where FullName -Contains $packageName |
+            where FullName -Like "*$packageName*" |
             foreach { Update-AssemblyInfo $_ $nuspec}     
     } 
 }

@@ -39,8 +39,11 @@ namespace Essential.Templating.Razor
             {
                 writer.Write(encodedString);
             }
-            var factory = new HtmlEncodedStringFactory();
-            writer.Write(factory.CreateEncodedString(value));
+            else
+            {
+                var factory = new HtmlEncodedStringFactory();
+                writer.Write(factory.CreateEncodedString(value));
+            }
         }
 
         public override TemplateWriter Include(string cacheName, object model = null)

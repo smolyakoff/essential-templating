@@ -127,6 +127,8 @@
     <Compile Include="ITemplateEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\IRenderer.cs" />
+    <Compile Include="Storage\StorageExtensions.cs" />
+    <Compile Include="Storage\EmbeddedResourceProvider.cs" />
     <Compile Include="Storage\FileSystemResourceProvider.cs" />
     <Compile Include="Storage\IResourceProvider.cs" />
     <Compile Include="Storage\LocalizedName.cs" />

@@ -27,7 +27,17 @@ namespace Essential.Templating.Common.Tests
             var resource = provider.Get("ResourceTemplate");
 
             Assert.IsNotNull(resource);
-            Assert.IsNotNull(resource.Length > 0);
+            Assert.IsTrue(resource.Length > 0);
+        }
+
+        [TestMethod]
+        public void EmbeddedResourceProvider_CanFindExistingResource()
+        {
+            var provider = new EmbeddedResourceProvider();
+            var resource = provider.Get("Templates/EmbeddedResourceTemplate.tmpl");
+
+            Assert.IsNotNull(resource);
+            Assert.IsTrue(resource.Length > 0);
         }
 
         [TestMethod]
@@ -49,6 +59,20 @@ namespace Essential.Templating.Common.Tests
         {
             var provider = ResxClassResourceProvider<ResxResource>.Create();
             var resource = provider.Get("ResourceTemplate", new CultureInfo("ru-RU"));
+
+            Assert.IsNotNull(resource);
+            using (var streamReader = new StreamReader(resource))
+            {
+                var templateString = streamReader.ReadToEnd();
+                Assert.IsTrue(templateString.Contains("русском"));
+            }
+        }
+
+        [TestMethod]
+        public void EmbeddedResourceProvider_CanFindLocalizedResource()
+        {
+            var provider = new EmbeddedResourceProvider();
+            var resource = provider.Get("Templates/EmbeddedResourceTemplate.tmpl", new CultureInfo("ru-RU"));
 
             Assert.IsNotNull(resource);
             using (var streamReader = new StreamReader(resource))

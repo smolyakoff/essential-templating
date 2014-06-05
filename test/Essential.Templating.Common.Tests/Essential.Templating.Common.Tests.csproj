@@ -65,6 +65,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Templates\EmbeddedResourceTemplate.ru.tmpl" />
+    <EmbeddedResource Include="Templates\EmbeddedResourceTemplate.tmpl" />
     <None Include="Templates\ResourceTemplate.ru.tmpl" />
     <None Include="Templates\ResourceTemplate.tmpl" />
     <None Include="Templates\Template.ru.tmpl">

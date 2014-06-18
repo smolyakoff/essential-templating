@@ -109,6 +109,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Caching\TemplateCacheKey.cs" />
     <Compile Include="Caching\CachePolicy.cs" />
     <Compile Include="Caching\CachePolicyExtensions.cs" />
     <Compile Include="Caching\GlobalTemplateCache.cs" />

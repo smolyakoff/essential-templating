@@ -7,22 +7,23 @@ namespace Essential.Templating.Common.Caching
     {
         private const string CacheKeyTemplate = "Essential.Templating.CacheItem<{0}>[{1}]";
 
-        public bool ContainsKey(string path)
+        public bool ContainsKey(TemplateCacheKey key)
         {
-            var cacheKey = string.Format(CacheKeyTemplate, typeof(T), path);
+            var cacheKey = string.Format(CacheKeyTemplate, typeof(T), key);
             return MemoryCache.Default.Contains(cacheKey, null);
         }
 
-        public bool Put(string path, T templateInfo, TimeSpan slidingExpiration)
+        public bool Put(TemplateCacheKey key, T templateInfo, TimeSpan slidingExpiration)
         {
-            var cacheKey = string.Format(CacheKeyTemplate, typeof(T), path);
-            return MemoryCache.Default.Add(cacheKey, new TemplateCacheItem<T>(path, templateInfo),
+            var cacheKey = string.Format(CacheKeyTemplate, typeof(T), key);
+            return MemoryCache.Default.Add(cacheKey, new TemplateCacheItem<T>(key, templateInfo),
                 new CacheItemPolicy {SlidingExpiration = slidingExpiration});
         }
 
-        public TemplateCacheItem<T> Get(string path)
+        public TemplateCacheItem<T> Get(TemplateCacheKey key)
         {
-            var item = MemoryCache.Default.Get(path) as TemplateCacheItem<T>;
+            var cacheKey = string.Format(CacheKeyTemplate, typeof(T), key);
+            var item = MemoryCache.Default.Get(cacheKey) as TemplateCacheItem<T>;
             return item;
         }
     }

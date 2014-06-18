@@ -38,16 +38,21 @@ namespace Essential.Templating.Common.Storage
         public Stream Get(string path, CultureInfo culture = null)
         {
             culture = culture ?? Thread.CurrentThread.CurrentCulture;
-            Assembly cultureAssembly = null;
-            var foundCulture =
-                culture.GetPossibleCultures()
-                    .FirstOrDefault(x => _baseAssembly.TryGetSatteliteAssembly(x, out cultureAssembly));
-            if (cultureAssembly == null)
-            {
-                return null;
-            }
             var fullName = ToFullNameWithNamespace(path);
-            return cultureAssembly.GetManifestResourceStream(fullName);
+            foreach (var possibleCulture in culture.GetPossibleCultures())
+            {
+                Assembly cultureAssembly;
+                if (!_baseAssembly.TryGetSatteliteAssembly(possibleCulture, out cultureAssembly))
+                {
+                    continue;
+                }
+                var stream = cultureAssembly.GetManifestResourceStream(fullName);
+                if (stream != null)
+                {
+                    return stream;
+                }
+            }
+            return null;
         }
 
         private string ToFullNameWithNamespace(string path)

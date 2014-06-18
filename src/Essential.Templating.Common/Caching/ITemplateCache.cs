@@ -7,10 +7,10 @@ namespace Essential.Templating.Common.Caching
     [ContractClass(typeof(TemplateCacheContracts<>))]
     public interface ITemplateCache<T>
     {
-        bool ContainsKey(string path);
+        bool ContainsKey(TemplateCacheKey key);
 
-        bool Put(string path, T templateInfo, TimeSpan slidingExpiration);
+        bool Put(TemplateCacheKey key, T templateInfo, TimeSpan slidingExpiration);
 
-        TemplateCacheItem<T> Get(string path);
+        TemplateCacheItem<T> Get(TemplateCacheKey key);
     }
 }

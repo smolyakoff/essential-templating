@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net.Mail;
+﻿using System.Net.Mail;
 using System.Threading;
 using Essential.Templating.Common.Rendering;
 
@@ -10,9 +9,12 @@ namespace Essential.Templating.Razor.Email.Rendering
         public MailMessage Render(EmailTemplate template, object viewBag)
         {
             var previousCulture = Thread.CurrentThread.CurrentCulture;
+            var previousUICulture = Thread.CurrentThread.CurrentUICulture;
             Thread.CurrentThread.CurrentCulture = template.Culture;
+            Thread.CurrentThread.CurrentUICulture = template.Culture;
             var message = template.Render(viewBag);
             Thread.CurrentThread.CurrentCulture = previousCulture;
+            Thread.CurrentThread.CurrentUICulture = previousUICulture;
             return message;
         }
     }

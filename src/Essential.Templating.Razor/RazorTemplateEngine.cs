@@ -181,11 +181,12 @@ namespace Essential.Templating.Razor
                 new TemplateContext(path, culture, _resourceProvider, new Tool(this)), model);
         }
 
-        private Type ResolveTemplateType(string path, CultureInfo culture = null)
+        private Type ResolveTemplateType(string path, CultureInfo culture)
         {
+            var cacheKey = new TemplateCacheKey(path, culture);
             try
             {
-                var cacheItem = _cache.Get(path);
+                var cacheItem = _cache.Get(cacheKey);
                 if (cacheItem != null)
                 {
                     return cacheItem.TemplateInfo;
@@ -194,7 +195,7 @@ namespace Essential.Templating.Razor
                 var type = templateStream == null ? null : _compiler.Compile(templateStream);
                 if (type != null)
                 {
-                    _cache.Put(path, type, _cacheExpiration);
+                    _cache.Put(cacheKey, type, _cacheExpiration);
                 }
                 return type;
             }
@@ -208,11 +209,12 @@ namespace Essential.Templating.Razor
             }
         }
 
-        private Type ResolveTemplateType<T>(string path, CultureInfo culture = null)
+        private Type ResolveTemplateType<T>(string path, CultureInfo culture)
         {
+            var cacheKey = new TemplateCacheKey(path, culture);
             try
             {
-                var cacheItem = _cache.Get(path);
+                var cacheItem = _cache.Get(cacheKey);
                 if (cacheItem != null)
                 {
                     return cacheItem.TemplateInfo;
@@ -221,7 +223,7 @@ namespace Essential.Templating.Razor
                 var type = templateStream == null ? null : _compiler.Compile(templateStream, typeof (T));
                 if (type != null)
                 {
-                    _cache.Put(path, type, _cacheExpiration);
+                    _cache.Put(cacheKey, type, _cacheExpiration);
                 }
                 return type;
             }
@@ -237,9 +239,10 @@ namespace Essential.Templating.Razor
 
         private Type ResolveTemplateType(string path, CultureInfo culture, object model)
         {
+            var cacheKey = new TemplateCacheKey(path, culture);
             try
             {
-                var cacheItem = _cache.Get(path);
+                var cacheItem = _cache.Get(cacheKey);
                 if (cacheItem != null)
                 {
                     return cacheItem.TemplateInfo;
@@ -248,7 +251,7 @@ namespace Essential.Templating.Razor
                 var type = templateStream == null ? null : _compiler.Compile(templateStream, model.GetType());
                 if (type != null)
                 {
-                    _cache.Put(path, type, _cacheExpiration);
+                    _cache.Put(cacheKey, type, _cacheExpiration);
                 }
                 return type;
             }

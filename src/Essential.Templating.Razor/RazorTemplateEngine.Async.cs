@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Essential.Templating.Common;
+using Essential.Templating.Common.Caching;
 using Essential.Templating.Common.Rendering;
 using Essential.Templating.Razor.Compilation;
 using Essential.Templating.Razor.Rendering;
@@ -119,11 +120,12 @@ namespace Essential.Templating.Razor
                 new TemplateContext(path, culture, _resourceProvider, new Tool(this)), model);
         }
 
-        private async Task<Type> ResolveTemplateTypeAsync(string path, CultureInfo culture = null)
+        private async Task<Type> ResolveTemplateTypeAsync(string path, CultureInfo culture)
         {
+            var cacheKey = new TemplateCacheKey(path, culture);
             try
             {
-                var cacheItem = _cache.Get(path);
+                var cacheItem = _cache.Get(cacheKey);
                 if (cacheItem != null)
                 {
                     return cacheItem.TemplateInfo;
@@ -132,7 +134,7 @@ namespace Essential.Templating.Razor
                 var type = templateStream == null ? null : await _compiler.CompileAsync(templateStream);
                 if (type != null)
                 {
-                    _cache.Put(path, type, _cacheExpiration);
+                    _cache.Put(cacheKey, type, _cacheExpiration);
                 }
                 return type;
             }
@@ -146,11 +148,12 @@ namespace Essential.Templating.Razor
             }
         }
 
-        private async Task<Type> ResolveTemplateTypeAsync<T>(string path, CultureInfo culture = null)
+        private async Task<Type> ResolveTemplateTypeAsync<T>(string path, CultureInfo culture)
         {
+            var cacheKey = new TemplateCacheKey(path, culture);
             try
             {
-                var cacheItem = _cache.Get(path);
+                var cacheItem = _cache.Get(cacheKey);
                 if (cacheItem != null)
                 {
                     return cacheItem.TemplateInfo;
@@ -159,7 +162,7 @@ namespace Essential.Templating.Razor
                 var type = templateStream == null ? null : await _compiler.CompileAsync(templateStream, typeof (T));
                 if (type != null)
                 {
-                    _cache.Put(path, type, _cacheExpiration);
+                    _cache.Put(cacheKey, type, _cacheExpiration);
                 }
                 return type;
             }

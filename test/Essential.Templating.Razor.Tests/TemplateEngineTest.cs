@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Globalization;
+using System.Reflection;
 using Essential.Templating.Common;
 using Essential.Templating.Common.Caching;
 using Essential.Templating.Common.Storage;
@@ -12,24 +13,35 @@ namespace Essential.Templating.Razor.Tests
 {
     [TestClass]
     [DeploymentItem("Templates", "Templates")]
+    [DeploymentItem(@"ru\Essential.Templating.Razor.Tests.resources.dll", "ru")]
     public class TemplateEngineTest
     {
-        private readonly ITemplateEngine _templateEngine;
+        private readonly ITemplateEngine _fileSystemTemplateEngine;
+
+        private readonly ITemplateEngine _embeddedResourceTemplateEngine;
 
         public TemplateEngineTest()
         {
-            var config = new RazorTemplateEngineConfiguration
+            var fileSystemConfig = new RazorTemplateEngineConfiguration
             {
                 ResourceProvider = new FileSystemResourceProvider("Templates"),
                 CachePolicy = CachePolicy.Instance
             };
-            _templateEngine = new RazorTemplateEngine(config);
+            var embeddedResourceConfig = new RazorTemplateEngineConfiguration
+            {
+                ResourceProvider = new EmbeddedResourceProvider(
+                    Assembly.GetExecutingAssembly(),
+                    "Essential.Templating.Razor.Tests.Templates.Embedded"),
+                CachePolicy = CachePolicy.Instance
+            };
+            _fileSystemTemplateEngine = new RazorTemplateEngine(fileSystemConfig);
+            _embeddedResourceTemplateEngine = new RazorTemplateEngine(embeddedResourceConfig);
         }
 
         [TestMethod]
         public void RenderLocalizedTemplate_RendersInSpecifiedCulture()
         {
-            var template = _templateEngine.Render("Test.cshtml", null, new CultureInfo("ru-RU"));
+            var template = _fileSystemTemplateEngine.Render("Test.cshtml", null, new CultureInfo("ru-RU"));
             
             Assert.IsNotNull(template);
             Debug.WriteLine(template);
@@ -40,7 +52,7 @@ namespace Essential.Templating.Razor.Tests
         [TestMethod]
         public void RenderTemplateWithModel_RendersCorrectText()
         {
-            var template = _templateEngine.Render("Test.cshtml", "Model", null, CultureInfo.InvariantCulture);
+            var template = _fileSystemTemplateEngine.Render("Test.cshtml", "Model", null, CultureInfo.InvariantCulture);
 
             Assert.IsNotNull(template);
             Debug.WriteLine(template);
@@ -51,7 +63,7 @@ namespace Essential.Templating.Razor.Tests
         [TestMethod]
         public void RenderTemplateWithViewBag_RendersCorrectText()
         {
-            var template = _templateEngine.Render("ViewBag.cshtml", new {Hello = "Hello, World!"}, null);
+            var template = _fileSystemTemplateEngine.Render("ViewBag.cshtml", new {Hello = "Hello, World!"}, null);
 
             Assert.IsNotNull(template);
             Debug.WriteLine(template);
@@ -62,7 +74,7 @@ namespace Essential.Templating.Razor.Tests
         [TestMethod]
         public void RenderExposingTemplate_RendersCorrectTemplateStructure()
         {
-            var templateStructure = _templateEngine.Render("Exposing.cshtml", renderer: new TemplateStructureRenderer());
+            var templateStructure = _fileSystemTemplateEngine.Render("Exposing.cshtml", renderer: new TemplateStructureRenderer());
 
             Assert.IsNotNull(templateStructure);
             Debug.WriteLine(templateStructure.Body);
@@ -78,17 +90,34 @@ namespace Essential.Templating.Razor.Tests
         [ExpectedException(typeof (ArgumentException))]
         public void TemplateEngine_OnEmptyPath_ThrowsArgumentException()
         {
-            _templateEngine.Render("");
+            _fileSystemTemplateEngine.Render("");
         }
 
         [TestMethod]
         public void TemplateEngine_RenderAsync_Executes()
         {
             var template =
-                _templateEngine.RenderAsync("Test.cshtml", "Model", null, CultureInfo.InvariantCulture).Result;
+                _fileSystemTemplateEngine.RenderAsync("Test.cshtml", "Model", null, CultureInfo.InvariantCulture).Result;
 
             Assert.IsNotNull(template);
             Assert.IsTrue(template.Length > 0);
+        }
+
+        [TestMethod]
+        public void TemplateEngine_RenderTemplateWithCommonLayout_Executes()
+        {
+            var templateInvariant =
+                _embeddedResourceTemplateEngine.Render("WithLayout.cshtml", null, CultureInfo.InvariantCulture);
+            var templateRu =
+                _embeddedResourceTemplateEngine.Render("WithLayout.cshtml", null, new CultureInfo("ru-RU"));
+
+            Assert.IsNotNull(templateInvariant);
+            Assert.IsNotNull(templateRu);
+
+            Assert.IsTrue(templateInvariant.Contains("Layout"));
+            Assert.IsTrue(templateRu.Contains("Layout"));
+            Assert.IsTrue(templateInvariant.Contains("English"));
+            Assert.IsTrue(templateRu.Contains("русском"));
         }
     }
 }

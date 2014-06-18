@@ -56,9 +56,16 @@ namespace Essential.Templating.Razor
 
         protected override ITemplate ResolveLayout(string name)
         {
-            return string.IsNullOrEmpty(name)
-                ? null
-                : _templateContext.Resolve(name, Culture);
+            if (string.IsNullOrEmpty(name))
+            {
+                return null;
+            }
+            var layout = _templateContext.Resolve(name, Culture);
+            if (layout == null)
+            {
+                throw new InvalidOperationException("Layout template was not found.");
+            }
+            return layout;
         }
 
         protected Stream GetResource(string uri, CultureInfo culture = null)

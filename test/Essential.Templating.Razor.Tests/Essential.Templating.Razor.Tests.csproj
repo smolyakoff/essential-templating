@@ -170,6 +170,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <EmbeddedResource Include="Templates\Embedded\CommonLayout.cshtml" />
+    <EmbeddedResource Include="Templates\Embedded\WithLayout.cshtml" />
+    <EmbeddedResource Include="Templates\Embedded\WithLayout.ru.cshtml" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

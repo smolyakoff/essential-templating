@@ -13,6 +13,7 @@ namespace Essential.Templating.Razor.Email
         {
             RenderSection(Conventions.HtmlSectionName, false);
             RenderSection(Conventions.TextSectionName, false);
+            Write(RenderBody());
         }
     }
 }

@@ -174,7 +174,7 @@ Function Update-AssemblyInfo([String]$path, $nuspec)
             % {$_ -replace $assemblyVersionPattern, $assemblyVersion } |
             % {$_ -replace $fileVersionPattern, $fileVersion }
         } | Set-Variable -Name assemblyInfo
-    Set-Content $path $assemblyInfo
+    Set-Content $path $assemblyInfo -Encoding UTF8
 }
 
 Function Extract-Version([String]$versionString)

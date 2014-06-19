@@ -148,6 +148,7 @@ namespace Essential.Templating.Razor
 
         private Template ResolveTemplate(string path, CultureInfo culture)
         {
+            Contract.Requires(culture != null);
             var type = ResolveTemplateType(path, culture);
             if (type == null)
             {
@@ -159,6 +160,7 @@ namespace Essential.Templating.Razor
 
         private ITemplate<T> ResolveTemplate<T>(string path, CultureInfo culture, T model)
         {
+            Contract.Requires(culture != null);
             var type = ResolveTemplateType<T>(path, culture);
             if (type == null)
             {
@@ -170,6 +172,7 @@ namespace Essential.Templating.Razor
 
         private Template ResolveTemplate(string path, CultureInfo culture, object model)
         {
+            Contract.Requires(culture != null);
             var type = model == null
                 ? ResolveTemplateType(path, culture)
                 : ResolveTemplateType(path, culture, model);
@@ -183,6 +186,7 @@ namespace Essential.Templating.Razor
 
         private Type ResolveTemplateType(string path, CultureInfo culture)
         {
+            Contract.Requires(culture != null);
             var cacheKey = new TemplateCacheKey(path, culture);
             try
             {
@@ -211,6 +215,7 @@ namespace Essential.Templating.Razor
 
         private Type ResolveTemplateType<T>(string path, CultureInfo culture)
         {
+            Contract.Requires(culture != null);
             var cacheKey = new TemplateCacheKey(path, culture);
             try
             {
@@ -239,6 +244,7 @@ namespace Essential.Templating.Razor
 
         private Type ResolveTemplateType(string path, CultureInfo culture, object model)
         {
+            Contract.Requires(culture != null);
             var cacheKey = new TemplateCacheKey(path, culture);
             try
             {

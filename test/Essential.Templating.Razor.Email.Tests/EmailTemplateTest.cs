@@ -38,6 +38,16 @@ namespace Essential.Templating.Razor.Email.Tests
         }
 
         [TestMethod]
+        public void RenderSimpleEmailWithNoSections()
+        {
+            var email = _templateEngine.RenderEmail("SimpleEmailNoSections.cshtml");
+
+            Assert.IsNotNull(email);
+            Assert.IsFalse(email.IsBodyHtml);
+            Assert.IsTrue(email.Body.Contains("Plain text"));
+        }
+
+        [TestMethod]
         public void RenderEmailWithModelAndLayout()
         {
             var car = new Car {Make = "Ford", Model = "Mustang"};

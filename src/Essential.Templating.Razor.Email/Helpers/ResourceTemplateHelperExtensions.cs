@@ -25,7 +25,8 @@ namespace Essential.Templating.Razor.Email.Helpers
             }
             var linkedResource = new LinkedResource(resource, mediaType)
             {
-                TransferEncoding = transferEncoding
+                TransferEncoding = transferEncoding,
+                ContentId = contentId
             };
             helper.AddLinkedResource(linkedResource);
             var renderedResult = new RawString(string.Format("cid:{0}", contentId));

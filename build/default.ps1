@@ -179,7 +179,7 @@ Function Update-AssemblyInfo([String]$path, $nuspec)
 
 Function Extract-Version([String]$versionString)
 {
-    $versionString -match "\d{1,2}\.\d{1,2}\.\d{1,2}" | Out-Null
+    $versionString -match "\d{1,2}\.\d{1,2}\.\d{1,2}(\.\d{1,2})?" | Out-Null
     return $Matches[0]
 }
 

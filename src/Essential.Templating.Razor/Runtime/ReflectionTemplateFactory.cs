@@ -1,33 +1,28 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Diagnostics.Contracts;
 using System.Reflection;
-using System.Runtime.Caching;
 
 namespace Essential.Templating.Razor.Runtime
 {
     public class ReflectionTemplateFactory : ITemplateFactory
     {
-        private const string CacheKeyTemplate = "Essential.Templating.Razor.Template[{0}]";
+        private static readonly ConcurrentDictionary<Type, ConstructorInfo> ConstructorCache = new ConcurrentDictionary<Type, ConstructorInfo>(); 
 
         public Template Create(Type templateType, TemplateContext templateContext)
         {
-            var cacheKey = string.Format(CacheKeyTemplate, templateType);
             ConstructorInfo constructor;
-            if (MemoryCache.Default.Contains(cacheKey))
+            if (ConstructorCache.TryGetValue(templateType, out constructor))
             {
-                constructor = MemoryCache.Default.Get(cacheKey) as ConstructorInfo;
-                if (constructor != null)
-                {
-                    var template = constructor.Invoke(new object[] {templateContext}) as Template;
-                    return template;
-                }
+                var template = constructor.Invoke(new object[] { templateContext }) as Template;
+                return template;
             }
             constructor = FindConstructor(templateType);
             if (constructor == null)
             {
                 return null;
             }
-            MemoryCache.Default.Add(cacheKey, constructor, DateTime.MaxValue);
+            ConstructorCache.TryAdd(templateType, constructor);
             return constructor.Invoke(new object[] {templateContext}) as Template;
         }
 

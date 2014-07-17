@@ -21,6 +21,14 @@ namespace Essential.Templating.Common.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(FileNotFoundException))]
+        public void FileSystemProvider_CanNotFindResource()
+        {
+            var provider = new FileSystemResourceProvider("Templates");
+            provider.Get("NotFoundFileName.tmpl");           
+        }
+
+        [TestMethod]
         public void ResxClassProvider_CanFindExistingResource()
         {
             var provider = ResxClassResourceProvider<ResxResource>.Create();

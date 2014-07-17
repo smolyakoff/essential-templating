@@ -32,10 +32,17 @@ namespace Essential.Templating.Common.Storage
         {
             culture = culture ?? Thread.CurrentThread.CurrentCulture;
 
+            var paths = EnumeratePaths(path, culture);
+
             var filePath = EnumeratePaths(path, culture).Where(File.Exists).FirstOrDefault();
-            return filePath == null
-                ? null
-                : new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+
+            if (filePath == null)
+            {
+                var resolvedPaths = String.Join(", ", paths.Select(Path.GetFullPath).ToArray());
+                throw new FileNotFoundException(String.Format("Could not find template file. Paths searched {0}", resolvedPaths));
+            }
+            
+            return new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
         }
 
         private IEnumerable<string> EnumeratePaths(string path, CultureInfo culture = null)

@@ -124,6 +124,7 @@
     <Compile Include="Compilation\VBTemplateCompiler.cs" />
     <Compile Include="Configuration\RazorTemplateEngineBuilder.cs" />
     <Compile Include="Configuration\RazorTemplateEngineConfiguration.cs" />
+    <Compile Include="Contracts\TemplateCompilerContracts.cs" />
     <Compile Include="Contracts\TemplateFactoryContracts.cs" />
     <Compile Include="ExecuteContextAdapter.cs" />
     <Compile Include="ExposingTemplate%271.cs" />

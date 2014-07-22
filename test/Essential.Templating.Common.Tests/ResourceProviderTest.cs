@@ -55,6 +55,15 @@ namespace Essential.Templating.Common.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ResourceNotFoundException))]
+        public void FileSystemProvider_ThrowsResourceNotFoundException_WhenResourceIsNotFound()
+        {
+            var provider = new FileSystemResourceProvider("Templates");
+
+            var resource = provider.Get("TemplateNotFound.tmpl", new CultureInfo("en"));
+        }
+
+        [TestMethod]
         public void ResxClassProvider_CanFindLocalizedResource()
         {
             var provider = ResxClassResourceProvider<ResxResource>.Create();

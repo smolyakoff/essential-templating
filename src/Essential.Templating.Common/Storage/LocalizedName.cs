@@ -58,8 +58,13 @@ namespace Essential.Templating.Common.Storage
             }
             else
             {
-                yield return ToString();
-                yield return string.Format("{0}{1}{2}", _name, CultureDelimiter, _culture.TwoLetterISOLanguageName);
+                var mostSpecificName = ToString();
+                yield return mostSpecificName;
+                var languageOnlyName = string.Format("{0}{1}{2}", _name, CultureDelimiter, _culture.TwoLetterISOLanguageName);
+                if (!string.Equals(mostSpecificName, languageOnlyName, StringComparison.Ordinal))
+                {
+                    yield return languageOnlyName;
+                }
                 yield return Name;
             }
         }

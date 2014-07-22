@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Essential.Templating.Common;
 using Essential.Templating.Common.Caching;
 using Essential.Templating.Common.Rendering;
+using Essential.Templating.Common.Storage;
 using Essential.Templating.Razor.Compilation;
 using Essential.Templating.Razor.Rendering;
 using Essential.Templating.Razor.Runtime;
@@ -24,10 +25,6 @@ namespace Essential.Templating.Razor
             culture = culture ?? Thread.CurrentThread.CurrentCulture;
 
             var template = await ResolveTemplateAsync(path, culture, model);
-            if (template == null)
-            {
-                return null;
-            }
             try
             {
                 var concreteTemplate = template as Template;
@@ -52,10 +49,6 @@ namespace Essential.Templating.Razor
             culture = culture ?? Thread.CurrentThread.CurrentCulture;
 
             var template = await ResolveTemplateAsync(path, culture);
-            if (template == null)
-            {
-                return null;
-            }
             try
             {
                 var concreteTemplate = template as TTemplate;
@@ -79,10 +72,6 @@ namespace Essential.Templating.Razor
             culture = culture ?? Thread.CurrentThread.CurrentCulture;
 
             var template = await ResolveTemplateAsync(path, culture, model);
-            if (template == null)
-            {
-                return null;
-            }
             try
             {
                 var concreteTemplate = template as TTemplate;
@@ -101,10 +90,6 @@ namespace Essential.Templating.Razor
         private async Task<Template> ResolveTemplateAsync(string path, CultureInfo culture)
         {
             var type = await ResolveTemplateTypeAsync(path, culture);
-            if (type == null)
-            {
-                return null;
-            }
             return ActivateTemplate(type,
                 new TemplateContext(path, culture, _resourceProvider, new Tool(this)));
         }
@@ -112,10 +97,6 @@ namespace Essential.Templating.Razor
         private async Task<ITemplate<T>> ResolveTemplateAsync<T>(string path, CultureInfo culture, T model)
         {
             var type = await ResolveTemplateTypeAsync<T>(path, culture);
-            if (type == null)
-            {
-                return null;
-            }
             return ActivateTemplate(type,
                 new TemplateContext(path, culture, _resourceProvider, new Tool(this)), model);
         }
@@ -131,12 +112,13 @@ namespace Essential.Templating.Razor
                     return cacheItem.TemplateInfo;
                 }
                 var templateStream = _resourceProvider.Get(path, culture);
-                var type = templateStream == null ? null : await _compiler.CompileAsync(templateStream);
-                if (type != null)
-                {
-                    _cache.Put(cacheKey, type, _cacheExpiration);
-                }
+                var type = await _compiler.CompileAsync(templateStream);
+                _cache.Put(cacheKey, type, _cacheExpiration);
                 return type;
+            }
+            catch (ResourceNotFoundException ex)
+            {
+                throw new TemplateEngineException(ex);
             }
             catch (CompilationException ex)
             {
@@ -159,12 +141,13 @@ namespace Essential.Templating.Razor
                     return cacheItem.TemplateInfo;
                 }
                 var templateStream = _resourceProvider.Get(path, culture);
-                var type = templateStream == null ? null : await _compiler.CompileAsync(templateStream, typeof (T));
-                if (type != null)
-                {
-                    _cache.Put(cacheKey, type, _cacheExpiration);
-                }
+                var type = await _compiler.CompileAsync(templateStream, typeof (T));
+                _cache.Put(cacheKey, type, _cacheExpiration);
                 return type;
+            }
+            catch (ResourceNotFoundException ex)
+            {
+                throw new TemplateEngineException(ex);
             }
             catch (CompilationException ex)
             {

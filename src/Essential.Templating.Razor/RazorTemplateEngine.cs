@@ -65,10 +65,6 @@ namespace Essential.Templating.Razor
             culture = culture ?? Thread.CurrentThread.CurrentCulture;
 
             var template = ResolveTemplate(path, culture, model);
-            if (template == null)
-            {
-                return null;
-            }
             try
             {
                 var concreteTemplate = template as Template;
@@ -93,10 +89,6 @@ namespace Essential.Templating.Razor
             culture = culture ?? Thread.CurrentThread.CurrentCulture;
 
             var template = ResolveTemplate(path, culture);
-            if (template == null)
-            {
-                return null;
-            }
             try
             {
                 var concreteTemplate = template as TTemplate;
@@ -120,10 +112,6 @@ namespace Essential.Templating.Razor
             culture = culture ?? Thread.CurrentThread.CurrentCulture;
 
             var template = ResolveTemplate(path, culture, model);
-            if (template == null)
-            {
-                return null;
-            }
             try
             {
                 var concreteTemplate = template as TTemplate;
@@ -149,11 +137,9 @@ namespace Essential.Templating.Razor
         private Template ResolveTemplate(string path, CultureInfo culture)
         {
             Contract.Requires(culture != null);
+            Contract.Ensures(Contract.Result<Template>() != null);
+
             var type = ResolveTemplateType(path, culture);
-            if (type == null)
-            {
-                return null;
-            }
             return ActivateTemplate(type,
                 new TemplateContext(path, culture, _resourceProvider, new Tool(this)));
         }
@@ -161,11 +147,9 @@ namespace Essential.Templating.Razor
         private ITemplate<T> ResolveTemplate<T>(string path, CultureInfo culture, T model)
         {
             Contract.Requires(culture != null);
+            Contract.Ensures(Contract.Result<ITemplate>() != null);
+
             var type = ResolveTemplateType<T>(path, culture);
-            if (type == null)
-            {
-                return null;
-            }
             return ActivateTemplate(type,
                 new TemplateContext(path, culture, _resourceProvider, new Tool(this)), model);
         }
@@ -173,13 +157,11 @@ namespace Essential.Templating.Razor
         private Template ResolveTemplate(string path, CultureInfo culture, object model)
         {
             Contract.Requires(culture != null);
+            Contract.Ensures(Contract.Result<Template>() != null);
+
             var type = model == null
                 ? ResolveTemplateType(path, culture)
                 : ResolveTemplateType(path, culture, model);
-            if (type == null)
-            {
-                return null;
-            }
             return ActivateTemplate(type,
                 new TemplateContext(path, culture, _resourceProvider, new Tool(this)), model);
         }
@@ -196,12 +178,13 @@ namespace Essential.Templating.Razor
                     return cacheItem.TemplateInfo;
                 }
                 var templateStream = _resourceProvider.Get(path, culture);
-                var type = templateStream == null ? null : _compiler.Compile(templateStream);
-                if (type != null)
-                {
-                    _cache.Put(cacheKey, type, _cacheExpiration);
-                }
+                var type = _compiler.Compile(templateStream);
+                _cache.Put(cacheKey, type, _cacheExpiration);
                 return type;
+            }
+            catch (ResourceNotFoundException ex)
+            {
+                throw new TemplateEngineException(ex);
             }
             catch (CompilationException ex)
             {
@@ -225,12 +208,13 @@ namespace Essential.Templating.Razor
                     return cacheItem.TemplateInfo;
                 }
                 var templateStream = _resourceProvider.Get(path, culture);
-                var type = templateStream == null ? null : _compiler.Compile(templateStream, typeof (T));
-                if (type != null)
-                {
-                    _cache.Put(cacheKey, type, _cacheExpiration);
-                }
+                var type = _compiler.Compile(templateStream, typeof (T));
+                _cache.Put(cacheKey, type, _cacheExpiration);
                 return type;
+            }
+            catch (ResourceNotFoundException ex)
+            {
+                throw new TemplateEngineException(ex);
             }
             catch (CompilationException ex)
             {
@@ -254,12 +238,13 @@ namespace Essential.Templating.Razor
                     return cacheItem.TemplateInfo;
                 }
                 var templateStream = _resourceProvider.Get(path, culture);
-                var type = templateStream == null ? null : _compiler.Compile(templateStream, model.GetType());
-                if (type != null)
-                {
-                    _cache.Put(cacheKey, type, _cacheExpiration);
-                }
+                var type = _compiler.Compile(templateStream, model.GetType());
+                _cache.Put(cacheKey, type, _cacheExpiration);
                 return type;
+            }
+            catch (ResourceNotFoundException ex)
+            {
+                throw new TemplateEngineException(ex);
             }
             catch (CompilationException ex)
             {

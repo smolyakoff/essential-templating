@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading;
 
 namespace Essential.Templating.Common.Storage
@@ -39,6 +41,7 @@ namespace Essential.Templating.Common.Storage
         {
             culture = culture ?? Thread.CurrentThread.CurrentCulture;
             var fullName = ToFullNameWithNamespace(path);
+            var attemptedAssemblies = new List<Assembly>();
             foreach (var possibleCulture in culture.GetPossibleCultures())
             {
                 Assembly cultureAssembly;
@@ -46,13 +49,21 @@ namespace Essential.Templating.Common.Storage
                 {
                     continue;
                 }
+                attemptedAssemblies.Add(cultureAssembly);
                 var stream = cultureAssembly.GetManifestResourceStream(fullName);
                 if (stream != null)
                 {
                     return stream;
                 }
             }
-            return null;
+            var messageBuilder = new StringBuilder();
+            messageBuilder.AppendLine("The specified resource was not found.")
+                .AppendLine(string.Format("Resource name: {0}. Attempted assemblies:", fullName));
+            foreach (var attemptedAssembly in attemptedAssemblies)
+            {
+                messageBuilder.AppendLine(string.Format(" - {0}", attemptedAssembly.FullName));
+            }
+            throw new ResourceNotFoundException(messageBuilder.ToString(), path);
         }
 
         private string ToFullNameWithNamespace(string path)

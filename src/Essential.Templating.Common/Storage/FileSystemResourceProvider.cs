@@ -4,6 +4,7 @@ using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading;
 
 namespace Essential.Templating.Common.Storage
@@ -32,10 +33,16 @@ namespace Essential.Templating.Common.Storage
         {
             culture = culture ?? Thread.CurrentThread.CurrentCulture;
 
-            var filePath = EnumeratePaths(path, culture).Where(File.Exists).FirstOrDefault();
-            return filePath == null
-                ? null
-                : new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            var paths = EnumeratePaths(path, culture).ToList();
+            var filePath = paths.Where(File.Exists).FirstOrDefault();
+            if (filePath != null)
+            {
+                return new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+            }
+            var builder = new StringBuilder();
+            builder.AppendLine("The specified resource was not found. The following files do not exist:");
+            paths.ForEach(p => builder.AppendLine(string.Format(" - {0}", p)));
+            throw new ResourceNotFoundException(builder.ToString(), path);
         }
 
         private IEnumerable<string> EnumeratePaths(string path, CultureInfo culture = null)
@@ -48,7 +55,8 @@ namespace Essential.Templating.Common.Storage
             var extension = Path.GetExtension(filePath);
             var localizedName = new LocalizedName(name, culture);
             return localizedName.GetPossibleNames()
-                .Select(x => string.Format("{0}{1}", x, extension));
+                .Select(x => string.Format("{0}{1}", x, extension))
+                .Select(Path.GetFullPath);
         }
     }
 }

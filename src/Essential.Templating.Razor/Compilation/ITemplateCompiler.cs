@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Threading.Tasks;
+using Essential.Templating.Razor.Contracts;
 
 namespace Essential.Templating.Razor.Compilation
 {
+    [ContractClass(typeof(TemplateCompilerContracts))]
     internal interface ITemplateCompiler
     {
         bool EnsureNamespace(string @namespace);

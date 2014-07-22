@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Resources;
+using System.Text;
 
 namespace Essential.Templating.Common.Storage
 {
@@ -23,7 +24,16 @@ namespace Essential.Templating.Common.Storage
         {
             culture = culture ?? CultureInfo.InvariantCulture;
             dynamic resource = _resourceManager.GetObject(path, culture);
-            return resource == null ? null : Streamer.ToStream(resource);
+            if (resource != null)
+            {
+                return Streamer.ToStream(resource);
+            }
+            var messageBuilder = new StringBuilder();
+            messageBuilder
+                .AppendLine("The specified resource was not found.")
+                .AppendLine(string.Format("Resource manager type: {0}",_resourceManager.GetType().FullName))
+                .AppendLine(string.Format("Attempted culture: {0}", culture));
+            throw new ResourceNotFoundException(messageBuilder.ToString(), path);
         }
 
         public static ResxClassResourceProvider<T> Create()

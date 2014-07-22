@@ -13,6 +13,7 @@ namespace Essential.Templating.Common.Contracts
         {
             Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(path));
 
+            Contract.Ensures(Contract.Result<Stream>() != null);
             throw new NotImplementedException();
         }
     }

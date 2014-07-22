@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Threading.Tasks;
-using RazorEngine.Configuration;
 using RazorEngine.Templating;
 
 namespace Essential.Templating.Razor.Compilation

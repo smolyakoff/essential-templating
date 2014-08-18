@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
@@ -48,7 +49,7 @@ namespace Essential.Templating.Razor
 
         public override TemplateWriter Include(string cacheName, object model = null)
         {
-            var partial = _templateContext.Render(cacheName, Culture, model);
+            var partial = _templateContext.RenderString(cacheName, Culture, model);
             return partial == null
                 ? new TemplateWriter(w => { })
                 : new TemplateWriter(w => w.Write(partial));
@@ -68,6 +69,22 @@ namespace Essential.Templating.Razor
             return layout;
         }
 
+        protected ITemplate ResolveLayout(string name, Dictionary<string, object> contextEnvironment)
+        {
+            Contract.Requires(contextEnvironment != null);
+
+            if (string.IsNullOrEmpty(name))
+            {
+                return null;
+            }
+            var layout = _templateContext.Resolve(name, Culture, contextEnvironment);
+            if (layout == null)
+            {
+                throw new InvalidOperationException("Layout template was not found.");
+            }
+            return layout;
+        }
+
         protected Stream GetResource(string uri, CultureInfo culture = null)
         {
             Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(uri));
@@ -78,7 +95,8 @@ namespace Essential.Templating.Razor
         protected TemplateContext DeriveContext(string path)
         {
             Contract.Requires(!string.IsNullOrEmpty(path));
-            return new TemplateContext(path, _templateContext.Culture, _templateContext.ResourceProvider, _templateContext.TemplateTool);
+
+            return _templateContext.Derive(path);
         }
     }
 }

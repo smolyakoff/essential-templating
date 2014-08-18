@@ -119,6 +119,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Conventions.cs" />
+    <Compile Include="EmailContext.cs" />
     <Compile Include="EmailTemplate%271.cs" />
     <Compile Include="EmailTemplate.cs" />
     <Compile Include="EmailTemplateLayout.cs" />

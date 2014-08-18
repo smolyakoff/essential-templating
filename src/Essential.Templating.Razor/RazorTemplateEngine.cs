@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Threading;
@@ -144,6 +145,23 @@ namespace Essential.Templating.Razor
                 new TemplateContext(path, culture, _resourceProvider, new Tool(this)));
         }
 
+        private Template ResolveTemplate(string path, CultureInfo culture,
+            IDictionary<string, object> contextEnvironmement)
+        {
+            Contract.Requires(culture != null);
+            Contract.Requires(contextEnvironmement != null);
+            Contract.Ensures(Contract.Result<Template>() != null);
+            
+
+            var type = ResolveTemplateType(path, culture);
+            var context = new TemplateContext(path, culture, _resourceProvider, new Tool(this));
+            foreach (var pair in contextEnvironmement)
+            {
+                context.Put(pair.Key, pair.Value);
+            }
+            return ActivateTemplate(type, context);
+        }
+
         private ITemplate<T> ResolveTemplate<T>(string path, CultureInfo culture, T model)
         {
             Contract.Requires(culture != null);
@@ -152,6 +170,21 @@ namespace Essential.Templating.Razor
             var type = ResolveTemplateType<T>(path, culture);
             return ActivateTemplate(type,
                 new TemplateContext(path, culture, _resourceProvider, new Tool(this)), model);
+        }
+
+        private ITemplate<T> ResolveTemplate<T>(string path, CultureInfo culture, T model, IDictionary<string, object> contextEnvironment)
+        {
+            Contract.Requires(culture != null);
+            Contract.Requires(contextEnvironment != null);
+            Contract.Ensures(Contract.Result<ITemplate>() != null);
+
+            var type = ResolveTemplateType<T>(path, culture);
+            var context = new TemplateContext(path, culture, _resourceProvider, new Tool(this));
+            foreach (var pair in contextEnvironment)
+            {
+                context.Put(pair.Key, pair.Value);
+            }
+            return ActivateTemplate(type, context, model);
         }
 
         private Template ResolveTemplate(string path, CultureInfo culture, object model)
@@ -164,6 +197,23 @@ namespace Essential.Templating.Razor
                 : ResolveTemplateType(path, culture, model);
             return ActivateTemplate(type,
                 new TemplateContext(path, culture, _resourceProvider, new Tool(this)), model);
+        }
+
+        private Template ResolveTemplate(string path, CultureInfo culture, object model,
+            IDictionary<string, object> contextEnvironmement)
+        {
+            Contract.Requires(culture != null);
+            Contract.Requires(contextEnvironmement != null);
+            Contract.Ensures(Contract.Result<Template>() != null);
+            
+
+            var type = ResolveTemplateType(path, culture, model);
+            var context = new TemplateContext(path, culture, _resourceProvider, new Tool(this));
+            foreach (var pair in contextEnvironmement)
+            {
+                context.Put(pair.Key, pair.Value);
+            }
+            return ActivateTemplate(type, context);
         }
 
         private Type ResolveTemplateType(string path, CultureInfo culture)
@@ -315,6 +365,16 @@ namespace Essential.Templating.Razor
             public Template Resolve(string path, CultureInfo culture)
             {
                 return _razorTemplateEngine.ResolveTemplate(path, culture);
+            }
+
+            public Template Resolve(string path, CultureInfo culture, IDictionary<string, object> contextEnvironment)
+            {
+                return _razorTemplateEngine.ResolveTemplate(path, culture, contextEnvironment);
+            }
+
+            public Template Resolve(string path, CultureInfo culture, object model, IDictionary<string, object> contextEnvironment)
+            {
+                return _razorTemplateEngine.ResolveTemplate(path, culture, model, contextEnvironment);
             }
 
             public string RenderString(Template template)

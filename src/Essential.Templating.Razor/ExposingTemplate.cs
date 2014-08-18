@@ -64,7 +64,7 @@ namespace Essential.Templating.Razor
             return parent.Run(_executeContextAdapter.Context);
         }
 
-        [DebuggerStepThrough]
+        //[DebuggerStepThrough]
         public override TemplateWriter RenderSection(string name, bool isRequired = true)
         {
             // Do not use debugger breakpoints in this code.
@@ -99,5 +99,7 @@ namespace Essential.Templating.Razor
                 _templateVisitor.End(this);
             }
         }
+
+
     }
 }

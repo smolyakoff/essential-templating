@@ -1,11 +1,8 @@
 ﻿using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Text;
 using Essential.Templating.Common;
 using Essential.Templating.Common.Configuration;
 using Essential.Templating.Razor.Configuration;
-using Essential.Templating.Razor.Email.Rendering;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Essential.Templating.Razor.Email.Tests
@@ -65,6 +62,16 @@ namespace Essential.Templating.Razor.Email.Tests
         public void RenderEmailWithLinkedResource()
         {
             var email = _templateEngine.RenderEmail("ImageEmail.cshtml");
+            Assert.IsTrue(email != null);
+            var body = email.AlternateViews[0].ContentStream.AsString();
+            Debug.WriteLine(body);
+            Assert.IsTrue(email.AlternateViews[0].LinkedResources.Any());
+        }
+
+        [TestMethod]
+        public void RenderEmailWithLinkedResourceInLayout()
+        {
+            var email = _templateEngine.RenderEmail("ImageEmailWithLayout.cshtml");
             Assert.IsTrue(email != null);
             var body = email.AlternateViews[0].ContentStream.AsString();
             Debug.WriteLine(body);

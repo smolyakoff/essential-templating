@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Text;
@@ -26,13 +25,17 @@ namespace Essential.Templating.Razor
             lock (_syncRoot)
             {
                 _templateVisitor = templateVisitor;
-                var body = ((ITemplate) this).Run(new ExecuteContext(new ObjectViewBag(viewBag)));
-                _templateVisitor.Body(body);
+                using (var writer = new StringWriter())
+                {
+                    ((ITemplate)this).Run(new ExecuteContext(new ObjectViewBag(viewBag)), writer);
+                    var body = writer.GetStringBuilder().ToString();
+                    _templateVisitor.Body(body);
+                }
                 _templateVisitor = null;
             }
         }
 
-        string ITemplate.Run(ExecuteContext context)
+        void ITemplate.Run(ExecuteContext context, TextWriter textWriter)
         {
             var builder = new StringBuilder();
             _executeContextAdapter = new ExecuteContextAdapter(this, context);
@@ -47,7 +50,9 @@ namespace Essential.Templating.Razor
             var parent = ResolveLayout(Layout);
             if (parent == null && string.IsNullOrEmpty(Layout))
             {
-                return builder.ToString();
+                var result = builder.ToString();
+                textWriter.Write(result);
+                return;
             }
             if (parent == null)
             {
@@ -61,7 +66,8 @@ namespace Essential.Templating.Razor
             exposingParent._templateVisitor = _templateVisitor;
             var bodyWriter = new TemplateWriter(tw => tw.Write(builder.ToString()));
             _executeContextAdapter.PushBody(bodyWriter);
-            return parent.Run(_executeContextAdapter.Context);
+            _executeContextAdapter.PushSections();
+            parent.Run(_executeContextAdapter.Context, textWriter);
         }
 
         //[DebuggerStepThrough]

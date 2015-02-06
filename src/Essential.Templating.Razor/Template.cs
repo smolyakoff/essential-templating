@@ -47,7 +47,7 @@ namespace Essential.Templating.Razor
             }
         }
 
-        public override TemplateWriter Include(string cacheName, object model = null)
+        public TemplateWriter Include(string cacheName, object model = null)
         {
             var partial = _templateContext.RenderString(cacheName, Culture, model);
             return partial == null

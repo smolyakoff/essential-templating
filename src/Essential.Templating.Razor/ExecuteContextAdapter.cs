@@ -21,6 +21,9 @@ namespace Essential.Templating.Razor
         private readonly MethodInfo _pushBodyMethod = typeof (ExecuteContext).GetMethod("PushBody",
             BindingFlags.NonPublic | BindingFlags.Instance);
 
+        private readonly MethodInfo _pushSectionsMethod = typeof(ExecuteContext).GetMethod("PushSections",
+            BindingFlags.NonPublic | BindingFlags.Instance);
+
         private readonly TemplateBase _template;
 
         internal ExecuteContextAdapter(TemplateBase template, ExecuteContext context)
@@ -59,6 +62,15 @@ namespace Essential.Templating.Razor
                 throw new InvalidOperationException("PushBody method was not found.");
             }
             _pushBodyMethod.Invoke(_context, new object[] {templateWriter});
+        }
+
+        internal void PushSections()
+        {
+            if (_pushSectionsMethod == null)
+            {
+                throw new InvalidOperationException("PushSections method was not found.");
+            }
+            _pushSectionsMethod.Invoke(_context, null);
         }
 
         private void SetContext(ExecuteContext executeContext)

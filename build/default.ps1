@@ -95,7 +95,7 @@ Task Test -Depends Compile {
     Set-Location $BuildDir
 }
 
-Task Compile {
+Task Compile -Depends RestorePackages {
     foreach ($target in $Targets){
         try {
             $package = $Packages.Get_Item($target)
@@ -111,6 +111,10 @@ Task Compile {
             Log-Message "Compilation of [$($package.Name)] completed with errors" Error
         }     
     }
+}
+
+Task RestorePackages {
+   Exec { & "$NuGetFile" restore "$SolutionFile" }
 }
 
 Task Clean {

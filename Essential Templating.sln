@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Content", "Content", "{65CA1A51-26AD-479C-B3F4-4D9D5C8260CE}"
 	ProjectSection(SolutionItems) = preProject
@@ -18,6 +18,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{C99EF350
 		build\Essential.Templating.Common.nuspec.tmpl = build\Essential.Templating.Common.nuspec.tmpl
 		build\Essential.Templating.Razor.Email.nuspec.tmpl = build\Essential.Templating.Razor.Email.nuspec.tmpl
 		build\Essential.Templating.Razor.nuspec.tmpl = build\Essential.Templating.Razor.nuspec.tmpl
+		build\publish-single.bat = build\publish-single.bat
 		build\publish.bat = build\publish.bat
 	EndProjectSection
 EndProject

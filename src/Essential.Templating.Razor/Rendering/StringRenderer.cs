@@ -15,7 +15,8 @@ namespace Essential.Templating.Razor.Rendering
             Thread.CurrentThread.CurrentUICulture = template.Culture;
             using (var writer = new StringWriter())
             {
-                ((ITemplate)template).Run(new ExecuteContext(new ObjectViewBag(viewBag)), writer);
+                template.SetData(null, new ObjectViewBag(viewBag));
+                ((ITemplate)template).Run(new ExecuteContext(), writer);
                 Thread.CurrentThread.CurrentCulture = previousCulture;
                 Thread.CurrentThread.CurrentUICulture = previousUICulture;
                 var result = writer.GetStringBuilder().ToString();

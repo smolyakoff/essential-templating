@@ -27,7 +27,8 @@ namespace Essential.Templating.Razor
                 _templateVisitor = templateVisitor;
                 using (var writer = new StringWriter())
                 {
-                    ((ITemplate)this).Run(new ExecuteContext(new ObjectViewBag(viewBag)), writer);
+                    this.SetData(null, new ObjectViewBag(viewBag));
+                    ((ITemplate)this).Run(new ExecuteContext(), writer);
                     var body = writer.GetStringBuilder().ToString();
                     _templateVisitor.Body(body);
                 }
@@ -58,6 +59,7 @@ namespace Essential.Templating.Razor
             {
                 throw new InvalidOperationException("Layout template was not found.");
             }
+            parent.SetData(null, ViewBag);
             var exposingParent = parent as ExposingTemplate;
             if (exposingParent == null)
             {

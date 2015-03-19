@@ -16,7 +16,6 @@ namespace Essential.Templating.Razor.Compilation
                 BaseTemplateType = typeof(Template)
             }))
         {
-            
         }
     }
 }

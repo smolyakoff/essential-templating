@@ -1,4 +1,4 @@
-Essential Templating
+Essential Templating [![Analytics](https://ga-beacon.appspot.com/UA-61414371-1/smolyakoff/essential-templating)](https://github.com/igrigorik/ga-beacon)
 =========
 
 Essential Templating is a set of libraries to render templated objects (like web pages or emails).

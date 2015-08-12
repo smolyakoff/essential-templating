@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Net.Mail;
+using PreMailer.Net;
 
 namespace Essential.Templating.Razor.Email.Rendering
 {
@@ -53,8 +55,17 @@ namespace Essential.Templating.Razor.Email.Rendering
             } 
             else if (!string.IsNullOrEmpty(_html) && string.IsNullOrEmpty(_text))
             {
+                var moveCssInline = PreMailer.Net.PreMailer.MoveCssInline(_html);
+
+                if (moveCssInline.Warnings.Count > 0)
+                {
+                    foreach (var warning in moveCssInline.Warnings)
+                    {
+                        Trace.TraceWarning("PreMailer.MoveCssInline: WARNING {0}", warning);
+                    }
+                }
                 mailMessage.IsBodyHtml = false;
-                var htmlView = AlternateView.CreateAlternateViewFromString(_html, mailMessage.BodyEncoding, "text/html");
+                var htmlView = AlternateView.CreateAlternateViewFromString(moveCssInline.Html, mailMessage.BodyEncoding, "text/html");
                 htmlView.LinkedResources.CopyFrom(_linkedResources);
                 mailMessage.AlternateViews.Add(htmlView);
             }

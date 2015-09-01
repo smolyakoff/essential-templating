@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using RazorEngine.Templating;
@@ -18,8 +17,6 @@ namespace Essential.Templating.Razor.Rendering
 
         private static IEnumerable<KeyValuePair<string, object>> GetProperties(object obj)
         {
-            Contract.Requires(obj != null);
-
             var properties = obj.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
             return
                 properties.Select(

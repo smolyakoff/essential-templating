@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -15,8 +14,6 @@ namespace Essential.Templating.Common.Storage
 
         private ResxClassResourceProvider(ResourceManager resourceManager)
         {
-            Contract.Requires(resourceManager != null);
-
             _resourceManager = resourceManager;
         }
 
@@ -28,17 +25,18 @@ namespace Essential.Templating.Common.Storage
             {
                 return Streamer.ToStream(resource);
             }
+
             var messageBuilder = new StringBuilder();
             messageBuilder
                 .AppendLine("The specified resource was not found.")
-                .AppendLine(string.Format("Resource manager type: {0}",_resourceManager.GetType().FullName))
+                .AppendLine(string.Format("Resource manager type: {0}", _resourceManager.GetType().FullName))
                 .AppendLine(string.Format("Attempted culture: {0}", culture));
             throw new ResourceNotFoundException(messageBuilder.ToString(), path);
         }
 
         public static ResxClassResourceProvider<T> Create()
         {
-            var resxClassType = typeof (T);
+            var resxClassType = typeof(T);
             var resourceManagerProperty = resxClassType.GetProperty("ResourceManager",
                 BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
             if (resourceManagerProperty == null)
@@ -46,6 +44,7 @@ namespace Essential.Templating.Common.Storage
                 throw new InvalidOperationException(string.Format("ResourceManager property was not found in {0}.",
                     resxClassType));
             }
+
             ResourceManager resourceManager;
             try
             {
@@ -56,11 +55,13 @@ namespace Essential.Templating.Common.Storage
                 throw new InvalidOperationException(
                     string.Format("ResourceManager property was not found in {0}.", resxClassType), ex);
             }
+
             if (resourceManager == null)
             {
                 throw new InvalidOperationException(string.Format("ResourceManager property was not found in {0}.",
                     resxClassType));
             }
+
             return new ResxClassResourceProvider<T>(resourceManager);
         }
     }

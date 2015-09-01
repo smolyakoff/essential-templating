@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using Essential.Templating.Common;
@@ -7,21 +6,20 @@ using Essential.Templating.Common.Caching;
 using Essential.Templating.Common.Storage;
 using Essential.Templating.Razor.Configuration;
 using Essential.Templating.Razor.Tests.Helpers;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace Essential.Templating.Razor.Tests
 {
-    [TestClass]
-    [DeploymentItem("Templates", "Templates")]
-    [DeploymentItem(@"ru\Essential.Templating.Razor.Tests.resources.dll", "ru")]
     public class TemplateEngineTest
     {
+        private readonly ITestOutputHelper _output;
+        private readonly ITemplateEngine _embeddedResourceTemplateEngine;
         private readonly ITemplateEngine _fileSystemTemplateEngine;
 
-        private readonly ITemplateEngine _embeddedResourceTemplateEngine;
-
-        public TemplateEngineTest()
+        public TemplateEngineTest(ITestOutputHelper output)
         {
+            _output = output;
             var fileSystemConfig = new RazorTemplateEngineConfiguration
             {
                 ResourceProvider = new FileSystemResourceProvider("Templates"),
@@ -38,72 +36,73 @@ namespace Essential.Templating.Razor.Tests
             _embeddedResourceTemplateEngine = new RazorTemplateEngine(embeddedResourceConfig);
         }
 
-        [TestMethod]
+        [Fact]
         public void RenderLocalizedTemplate_RendersInSpecifiedCulture()
         {
             var template = _fileSystemTemplateEngine.Render("Test.cshtml", null, new CultureInfo("ru-RU"));
-            
-            Assert.IsNotNull(template);
-            Debug.WriteLine(template);
 
-            Assert.IsTrue(!string.IsNullOrEmpty(template));
+            Assert.NotNull(template);
+            _output.WriteLine(template);
+
+            Assert.True(!string.IsNullOrEmpty(template));
         }
 
-        [TestMethod]
+        [Fact]
         public void RenderTemplateWithModel_RendersCorrectText()
         {
             var template = _fileSystemTemplateEngine.Render("Test.cshtml", "Model", null, CultureInfo.InvariantCulture);
 
-            Assert.IsNotNull(template);
-            Debug.WriteLine(template);
+            Assert.NotNull(template);
+            _output.WriteLine(template);
 
-            Assert.IsTrue(template == "Rendered string: Model");
+            Assert.True(template == "Rendered string: Model");
         }
 
-        [TestMethod]
+        [Fact]
         public void RenderTemplateWithViewBag_RendersCorrectText()
         {
             var template = _fileSystemTemplateEngine.Render("ViewBag.cshtml", new {Hello = "Hello, World!"}, null);
 
-            Assert.IsNotNull(template);
-            Debug.WriteLine(template);
+            Assert.NotNull(template);
+            _output.WriteLine(template);
 
-            Assert.IsTrue(template == "Hello, World!");
+            Assert.True(template == "Hello, World!");
         }
 
-        [TestMethod]
+        [Fact]
         public void RenderExposingTemplate_RendersCorrectTemplateStructure()
         {
-            var templateStructure = _fileSystemTemplateEngine.Render("Exposing.cshtml", renderer: new TemplateStructureRenderer());
+            var templateStructure =
+                _fileSystemTemplateEngine.Render("Exposing.cshtml", renderer: new TemplateStructureRenderer());
 
-            Assert.IsNotNull(templateStructure);
-            Debug.WriteLine(templateStructure.Body);
+            Assert.NotNull(templateStructure);
+            _output.WriteLine(templateStructure.Body);
 
-            Assert.IsTrue(templateStructure.StartCalled);
-            Assert.IsTrue(templateStructure.EndCalled);
-            Assert.IsTrue(templateStructure.Body.Length > 0);
-            Assert.IsTrue(templateStructure.Sections.Contains("Section1"));
-            Assert.IsTrue(templateStructure.Sections.Contains("Section2"));
+            Assert.True(templateStructure.StartCalled);
+            Assert.True(templateStructure.EndCalled);
+            Assert.True(templateStructure.Body.Length > 0);
+            Assert.True(templateStructure.Sections.Contains("Section1"));
+            Assert.True(templateStructure.Sections.Contains("Section2"));
         }
 
-        [TestMethod]
-        [ExpectedException(typeof (ArgumentException))]
+        [Fact]
         public void TemplateEngine_OnEmptyPath_ThrowsArgumentException()
         {
-            _fileSystemTemplateEngine.Render("");
+            Assert.Throws<ArgumentException>(() => _fileSystemTemplateEngine.Render(""));
         }
 
-        [TestMethod]
+        [Fact]
         public void TemplateEngine_RenderAsync_Executes()
         {
             var template =
-                _fileSystemTemplateEngine.RenderAsync("Test.cshtml", "Model", null, CultureInfo.InvariantCulture).Result;
+                _fileSystemTemplateEngine.RenderAsync("Test.cshtml", "Model", null, CultureInfo.InvariantCulture)
+                    .Result;
 
-            Assert.IsNotNull(template);
-            Assert.IsTrue(template.Length > 0);
+            Assert.NotNull(template);
+            Assert.True(template.Length > 0);
         }
 
-        [TestMethod]
+        [Fact]
         public void TemplateEngine_RenderTemplateWithCommonLayout_Executes()
         {
             var templateInvariant =
@@ -111,13 +110,29 @@ namespace Essential.Templating.Razor.Tests
             var templateRu =
                 _embeddedResourceTemplateEngine.Render("WithLayout.cshtml", null, new CultureInfo("ru-RU"));
 
-            Assert.IsNotNull(templateInvariant);
-            Assert.IsNotNull(templateRu);
+            Assert.NotNull(templateInvariant);
+            Assert.NotNull(templateRu);
 
-            Assert.IsTrue(templateInvariant.Contains("Layout"));
-            Assert.IsTrue(templateRu.Contains("Layout"));
-            Assert.IsTrue(templateInvariant.Contains("English"));
-            Assert.IsTrue(templateRu.Contains("русском"));
+            Assert.Contains("Layout", templateInvariant);
+            Assert.Contains("Layout", templateRu);
+            Assert.Contains("English", templateInvariant);
+            Assert.Contains("русском", templateRu);
+        }
+
+        [Fact]
+        public void RenderTemplateWithModel_PassesModelToLayout_AndRendersCorrectText()
+        {
+            var model = new Person
+            {
+                FirstName = "John",
+                LastName = "Doe",
+                Age = 36
+            };
+            var result = _fileSystemTemplateEngine.Render("Hello.cshtml", viewBag: null, model: model);
+            _output.WriteLine(result);
+
+            Assert.Contains("Hello, John Doe!", result);
+            Assert.Contains("The person's age is 36", result);
         }
     }
 }

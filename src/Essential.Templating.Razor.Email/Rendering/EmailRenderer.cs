@@ -12,10 +12,16 @@ namespace Essential.Templating.Razor.Email.Rendering
             var previousUICulture = Thread.CurrentThread.CurrentUICulture;
             Thread.CurrentThread.CurrentCulture = template.Culture;
             Thread.CurrentThread.CurrentUICulture = template.Culture;
-            var message = template.Render(viewBag);
-            Thread.CurrentThread.CurrentCulture = previousCulture;
-            Thread.CurrentThread.CurrentUICulture = previousUICulture;
-            return message;
+            try
+            {
+                var message = template.Render(viewBag);
+                return message;
+            }
+            finally
+            {
+                Thread.CurrentThread.CurrentCulture = previousCulture;
+                Thread.CurrentThread.CurrentUICulture = previousUICulture;
+            }
         }
     }
 }

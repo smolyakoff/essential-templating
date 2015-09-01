@@ -1,19 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics.Contracts;
 using System.Net.Mail;
 
 namespace Essential.Templating.Razor.Email.Rendering
 {
     internal class EmailTemplateVisitor : ITemplateVisitor
     {
+        private readonly ICollection<LinkedResource> _linkedResources = new Collection<LinkedResource>();
         private string _body;
 
         private string _html;
 
         private string _text;
-
-        private readonly ICollection<LinkedResource> _linkedResources = new Collection<LinkedResource>();
 
         public void Body(string text)
         {
@@ -45,16 +44,21 @@ namespace Essential.Templating.Razor.Email.Rendering
 
         public void CopyTo(MailMessage mailMessage)
         {
-            Contract.Requires(mailMessage != null);
+            if (mailMessage == null)
+            {
+                throw new ArgumentNullException("mailMessage");
+            }
+
             if (string.IsNullOrEmpty(_html) && string.IsNullOrEmpty(_text))
             {
                 mailMessage.IsBodyHtml = false;
                 mailMessage.Body = _body;
-            } 
+            }
             else if (!string.IsNullOrEmpty(_html) && string.IsNullOrEmpty(_text))
             {
                 mailMessage.IsBodyHtml = false;
-                var htmlView = AlternateView.CreateAlternateViewFromString(_html, mailMessage.BodyEncoding, "text/html");
+                var htmlView =
+                    AlternateView.CreateAlternateViewFromString(_html, mailMessage.BodyEncoding, "text/html");
                 htmlView.LinkedResources.CopyFrom(_linkedResources);
                 mailMessage.AlternateViews.Add(htmlView);
             }
@@ -67,7 +71,8 @@ namespace Essential.Templating.Razor.Email.Rendering
             {
                 mailMessage.IsBodyHtml = false;
                 mailMessage.Body = _text;
-                var htmlView = AlternateView.CreateAlternateViewFromString(_html, mailMessage.BodyEncoding, "text/html");
+                var htmlView =
+                    AlternateView.CreateAlternateViewFromString(_html, mailMessage.BodyEncoding, "text/html");
                 htmlView.LinkedResources.CopyFrom(_linkedResources);
                 mailMessage.AlternateViews.Add(htmlView);
             }

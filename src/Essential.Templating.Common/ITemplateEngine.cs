@@ -1,12 +1,9 @@
-﻿using System.Diagnostics.Contracts;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Threading.Tasks;
-using Essential.Templating.Common.Contracts;
 using Essential.Templating.Common.Rendering;
 
 namespace Essential.Templating.Common
 {
-    [ContractClass(typeof (TemplateEngineContracts))]
     public interface ITemplateEngine
     {
         string Render(string path, object viewBag = null, CultureInfo culture = null);

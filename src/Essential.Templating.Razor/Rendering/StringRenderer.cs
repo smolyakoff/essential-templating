@@ -13,14 +13,20 @@ namespace Essential.Templating.Razor.Rendering
             var previousUICulture = Thread.CurrentThread.CurrentUICulture;
             Thread.CurrentThread.CurrentCulture = template.Culture;
             Thread.CurrentThread.CurrentUICulture = template.Culture;
-            using (var writer = new StringWriter())
+            try
             {
-                template.SetData(null, new ObjectViewBag(viewBag));
-                ((ITemplate)template).Run(new ExecuteContext(), writer);
+                using (var writer = new StringWriter())
+                {
+                    template.SetData(null, new ObjectViewBag(viewBag));
+                    ((ITemplate) template).Run(new ExecuteContext(), writer);
+                    var result = writer.GetStringBuilder().ToString();
+                    return result;
+                }
+            }
+            finally
+            {
                 Thread.CurrentThread.CurrentCulture = previousCulture;
                 Thread.CurrentThread.CurrentUICulture = previousUICulture;
-                var result = writer.GetStringBuilder().ToString();
-                return result;  
             }
         }
     }

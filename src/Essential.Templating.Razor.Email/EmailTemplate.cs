@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics.Contracts;
 using System.Net.Mail;
 using System.Net.Mime;
 using System.Text;
@@ -18,7 +16,6 @@ namespace Essential.Templating.Razor.Email
 
         public EmailTemplate(TemplateContext templateContext) : base(templateContext)
         {
-            Contract.Requires<ArgumentNullException>(templateContext != null);
             _emailContext = templateContext.AddOrGetExisting(EmailContextKey, () => new EmailContext());
 
             Resource = new ResourceTemplateHelper(this, templateContext);
@@ -119,9 +116,10 @@ namespace Essential.Templating.Razor.Email
         {
             if (string.IsNullOrEmpty(name))
             {
-                return new EmailTemplateLayout(DeriveContext(this.GetType().FullName));
+                return new EmailTemplateLayout(DeriveContext(GetType().FullName));
             }
-            var contextEnvironment = new Dictionary<string, object>()
+
+            var contextEnvironment = new Dictionary<string, object>
             {
                 {EmailContextKey, _emailContext}
             };

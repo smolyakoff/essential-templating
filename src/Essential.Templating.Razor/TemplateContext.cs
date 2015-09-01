@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 using Essential.Templating.Common.Storage;
@@ -14,7 +13,7 @@ namespace Essential.Templating.Razor
         internal TemplateContext(string path, CultureInfo culture, IResourceProvider resourceProvider,
             ITemplateTool templateTool)
         {
-            _environment = new Dictionary<string, object>()
+            _environment = new Dictionary<string, object>
             {
                 {Keys.Path, path},
                 {Keys.Culture, culture},
@@ -25,7 +24,10 @@ namespace Essential.Templating.Razor
 
         private TemplateContext(Dictionary<string, object> environment)
         {
-            Contract.Requires(environment != null);
+            if (environment == null)
+            {
+                throw new ArgumentNullException("environment");
+            }
 
             _environment = environment;
         }
@@ -45,23 +47,29 @@ namespace Essential.Templating.Razor
             get { return (IResourceProvider) _environment[Keys.ResourceProvider]; }
         }
 
-        public Template Resolve(string path, CultureInfo culture, IDictionary<string, object> contextEnvironment)
+        internal ITemplateTool TemplateTool
         {
-            return TemplateTool.Resolve(path, culture, contextEnvironment);
+            get { return (ITemplateTool) _environment[Keys.TemplateTool]; }
         }
 
-        public Template Resolve(string path, CultureInfo culture)
+        public Template Resolve(string path, CultureInfo culture, IDictionary<string, object> contextEnvironment,
+            object model)
         {
-            return TemplateTool.Resolve(path, culture);
+            return TemplateTool.Resolve(path, culture, model, contextEnvironment);
         }
 
         public T AddOrGetExisting<T>(string key, Func<T> constructor)
         {
-            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(key));
+            if (string.IsNullOrEmpty(key))
+            {
+                throw new ArgumentException("Key cannot be null or empty.", "key");
+            }
+
             if (_environment.ContainsKey(key))
             {
                 return (T) _environment[key];
             }
+
             var value = constructor();
             _environment[key] = value;
             return value;
@@ -74,18 +82,12 @@ namespace Essential.Templating.Razor
 
         public string RenderString(string path, CultureInfo culture, object model)
         {
-            var template = TemplateTool.Resolve(path, culture, model);
+            var template = TemplateTool.Resolve(path, culture, model, new Dictionary<string, object>());
             return template == null ? null : TemplateTool.RenderString(template);
-        }
-
-        internal ITemplateTool TemplateTool
-        {
-            get { return (ITemplateTool) _environment[Keys.TemplateTool]; }
         }
 
         internal TemplateContext Derive(string path)
         {
-            Contract.Requires(!string.IsNullOrEmpty(path));
             var environment = _environment.ToDictionary(x => x.Key, x => x.Value);
             environment[Keys.Path] = path;
             var context = new TemplateContext(environment);

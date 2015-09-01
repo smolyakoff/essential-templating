@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -11,14 +10,14 @@ namespace Essential.Templating.Razor
     {
         private readonly ExecuteContext _context;
 
-        private readonly FieldInfo _contextField = typeof (TemplateBase).GetFields(BindingFlags.NonPublic |
-                                                                                   BindingFlags.Instance)
-            .FirstOrDefault(f => f.FieldType == typeof (ExecuteContext));
+        private readonly FieldInfo _contextField = typeof(TemplateBase).GetFields(BindingFlags.NonPublic |
+                                                                                  BindingFlags.Instance)
+            .FirstOrDefault(f => f.FieldType == typeof(ExecuteContext));
 
-        private readonly PropertyInfo _currentWriterProperty = typeof (ExecuteContext).GetProperty("CurrentWriter",
+        private readonly PropertyInfo _currentWriterProperty = typeof(ExecuteContext).GetProperty("CurrentWriter",
             BindingFlags.NonPublic | BindingFlags.Instance);
 
-        private readonly MethodInfo _pushBodyMethod = typeof (ExecuteContext).GetMethod("PushBody",
+        private readonly MethodInfo _pushBodyMethod = typeof(ExecuteContext).GetMethod("PushBody",
             BindingFlags.NonPublic | BindingFlags.Instance);
 
         private readonly MethodInfo _pushSectionsMethod = typeof(ExecuteContext).GetMethod("PushSections",
@@ -28,7 +27,10 @@ namespace Essential.Templating.Razor
 
         internal ExecuteContextAdapter(TemplateBase template, ExecuteContext context)
         {
-            Contract.Requires(template != null);
+            if (template == null)
+            {
+                throw new ArgumentNullException("template");
+            }
 
             _template = template;
             _context = context;
@@ -52,6 +54,7 @@ namespace Essential.Templating.Razor
             {
                 throw new InvalidOperationException("CurrentWriter property was not found.");
             }
+
             return (TextWriter) _currentWriterProperty.GetValue(_context);
         }
 
@@ -61,6 +64,7 @@ namespace Essential.Templating.Razor
             {
                 throw new InvalidOperationException("PushBody method was not found.");
             }
+
             _pushBodyMethod.Invoke(_context, new object[] {templateWriter});
         }
 
@@ -70,6 +74,7 @@ namespace Essential.Templating.Razor
             {
                 throw new InvalidOperationException("PushSections method was not found.");
             }
+
             _pushSectionsMethod.Invoke(_context, null);
         }
 
@@ -79,6 +84,7 @@ namespace Essential.Templating.Razor
             {
                 throw new InvalidOperationException("_context field was not found.");
             }
+
             _contextField.SetValue(_template, executeContext);
         }
 
@@ -88,6 +94,7 @@ namespace Essential.Templating.Razor
             {
                 throw new InvalidOperationException("CurrentWriter property was not found.");
             }
+
             _currentWriterProperty.SetValue(_context, textWriter);
         }
     }

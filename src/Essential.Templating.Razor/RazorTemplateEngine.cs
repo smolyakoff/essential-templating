@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Threading;
 using Essential.Templating.Common;
@@ -26,8 +25,15 @@ namespace Essential.Templating.Razor
 
         public RazorTemplateEngine(IResourceProvider resourceProvider, ITemplateFactory templateFactory)
         {
-            Contract.Requires<ArgumentNullException>(resourceProvider != null);
-            Contract.Requires<ArgumentNullException>(templateFactory != null);
+            if (resourceProvider == null)
+            {
+                throw new ArgumentNullException("resourceProvider");
+            }
+
+            if (templateFactory == null)
+            {
+                throw new ArgumentNullException("templateFactory");
+            }
 
             var configuration = new RazorTemplateEngineConfiguration
             {
@@ -47,7 +53,10 @@ namespace Essential.Templating.Razor
 
         public RazorTemplateEngine(RazorTemplateEngineConfiguration configuration)
         {
-            Contract.Requires<ArgumentNullException>(configuration != null);
+            if (configuration == null)
+            {
+                throw new ArgumentNullException("configuration");
+            }
 
             _compiler = configuration.CodeLanguage.GetCompiler();
             _cache = configuration.CachePolicy.GetCache<Type>();
@@ -68,13 +77,8 @@ namespace Essential.Templating.Razor
             var template = ResolveTemplate(path, culture, model);
             try
             {
-                var concreteTemplate = template as Template;
-                if (concreteTemplate == null)
-                {
-                    throw new TypeMismatchException(template.GetType(), typeof (Template));
-                }
                 var renderer = new StringRenderer();
-                return renderer.Render(concreteTemplate, viewBag);
+                return renderer.Render(template, viewBag);
             }
             catch (Exception ex)
             {
@@ -89,14 +93,15 @@ namespace Essential.Templating.Razor
         {
             culture = culture ?? Thread.CurrentThread.CurrentCulture;
 
-            var template = ResolveTemplate(path, culture);
+            var template = ResolveTemplate(path, culture, null, new Dictionary<string, object>());
             try
             {
                 var concreteTemplate = template as TTemplate;
                 if (concreteTemplate == null)
                 {
-                    throw new TypeMismatchException(template.GetType(), typeof (TTemplate));
+                    throw new TypeMismatchException(template.GetType(), typeof(TTemplate));
                 }
+
                 return renderer.Render(concreteTemplate, viewBag);
             }
             catch (Exception ex)
@@ -107,7 +112,7 @@ namespace Essential.Templating.Razor
 
         public TResult Render<TTemplate, TResult, T>(string path, IRenderer<TTemplate, TResult> renderer, T model,
             object viewBag = null, CultureInfo culture = null)
-            where TTemplate :class
+            where TTemplate : class
             where TResult : class
         {
             culture = culture ?? Thread.CurrentThread.CurrentCulture;
@@ -118,8 +123,9 @@ namespace Essential.Templating.Razor
                 var concreteTemplate = template as TTemplate;
                 if (concreteTemplate == null)
                 {
-                    throw new TypeMismatchException(template.GetType(), typeof (TTemplate));
+                    throw new TypeMismatchException(template.GetType(), typeof(TTemplate));
                 }
+
                 return renderer.Render(concreteTemplate, viewBag);
             }
             catch (Exception ex)
@@ -127,128 +133,23 @@ namespace Essential.Templating.Razor
                 throw new TemplateEngineException(ex);
             }
         }
-
-        public bool EnsureNamespace(string @namespace)
+        private Template ResolveTemplate<T>(string path, CultureInfo culture, T model)
         {
-            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(@namespace));
-
-            return _compiler.EnsureNamespace(@namespace);
-        }
-
-        private Template ResolveTemplate(string path, CultureInfo culture)
-        {
-            Contract.Requires(culture != null);
-            Contract.Ensures(Contract.Result<Template>() != null);
-
-            var type = ResolveTemplateType(path, culture);
-            return ActivateTemplate(type,
-                new TemplateContext(path, culture, _resourceProvider, new Tool(this)));
-        }
-
-        private Template ResolveTemplate(string path, CultureInfo culture,
-            IDictionary<string, object> contextEnvironmement)
-        {
-            Contract.Requires(culture != null);
-            Contract.Requires(contextEnvironmement != null);
-            Contract.Ensures(Contract.Result<Template>() != null);
-            
-
-            var type = ResolveTemplateType(path, culture);
-            var context = new TemplateContext(path, culture, _resourceProvider, new Tool(this));
-            foreach (var pair in contextEnvironmement)
-            {
-                context.Put(pair.Key, pair.Value);
-            }
-            return ActivateTemplate(type, context);
-        }
-
-        private ITemplate<T> ResolveTemplate<T>(string path, CultureInfo culture, T model)
-        {
-            Contract.Requires(culture != null);
-            Contract.Ensures(Contract.Result<ITemplate>() != null);
-
             var type = ResolveTemplateType<T>(path, culture);
             return ActivateTemplate(type,
                 new TemplateContext(path, culture, _resourceProvider, new Tool(this)), model);
         }
-
-        private ITemplate<T> ResolveTemplate<T>(string path, CultureInfo culture, T model, IDictionary<string, object> contextEnvironment)
-        {
-            Contract.Requires(culture != null);
-            Contract.Requires(contextEnvironment != null);
-            Contract.Ensures(Contract.Result<ITemplate>() != null);
-
-            var type = ResolveTemplateType<T>(path, culture);
-            var context = new TemplateContext(path, culture, _resourceProvider, new Tool(this));
-            foreach (var pair in contextEnvironment)
-            {
-                context.Put(pair.Key, pair.Value);
-            }
-            return ActivateTemplate(type, context, model);
-        }
-
-        private Template ResolveTemplate(string path, CultureInfo culture, object model)
-        {
-            Contract.Requires(culture != null);
-            Contract.Ensures(Contract.Result<Template>() != null);
-
-            var type = model == null
-                ? ResolveTemplateType(path, culture)
-                : ResolveTemplateType(path, culture, model);
-            return ActivateTemplate(type,
-                new TemplateContext(path, culture, _resourceProvider, new Tool(this)), model);
-        }
-
         private Template ResolveTemplate(string path, CultureInfo culture, object model,
-            IDictionary<string, object> contextEnvironmement)
+            IDictionary<string, object> contextEnvironment)
         {
-            Contract.Requires(culture != null);
-            Contract.Requires(contextEnvironmement != null);
-            Contract.Ensures(Contract.Result<Template>() != null);
-            
-
             var type = ResolveTemplateType(path, culture, model);
             var context = new TemplateContext(path, culture, _resourceProvider, new Tool(this));
-            foreach (var pair in contextEnvironmement)
-            {
-                context.Put(pair.Key, pair.Value);
-            }
-            return ActivateTemplate(type, context);
-        }
-
-        private Type ResolveTemplateType(string path, CultureInfo culture)
-        {
-            Contract.Requires(culture != null);
-            var cacheKey = new TemplateCacheKey(path, culture);
-            try
-            {
-                var cacheItem = _cache.Get(cacheKey);
-                if (cacheItem != null)
-                {
-                    return cacheItem.TemplateInfo;
-                }
-                var templateStream = _resourceProvider.Get(path, culture);
-                var type = _compiler.Compile(templateStream);
-                _cache.Put(cacheKey, type, _cacheExpiration);
-                return type;
-            }
-            catch (ResourceNotFoundException ex)
-            {
-                throw new TemplateEngineException(ex);
-            }
-            catch (CompilationException ex)
-            {
-                throw new TemplateEngineException(ex);
-            }
-            catch (Exception ex)
-            {
-                throw new TemplateEngineException("Can't resolve template type.", ex);
-            }
+            foreach (var pair in contextEnvironment) context.Put(pair.Key, pair.Value);
+            return ActivateTemplate(type, context, model);
         }
 
         private Type ResolveTemplateType<T>(string path, CultureInfo culture)
         {
-            Contract.Requires(culture != null);
             var cacheKey = new TemplateCacheKey(path, culture);
             try
             {
@@ -257,8 +158,9 @@ namespace Essential.Templating.Razor
                 {
                     return cacheItem.TemplateInfo;
                 }
+
                 var templateStream = _resourceProvider.Get(path, culture);
-                var type = _compiler.Compile(templateStream, typeof (T));
+                var type = _compiler.Compile(templateStream, typeof(T));
                 _cache.Put(cacheKey, type, _cacheExpiration);
                 return type;
             }
@@ -278,7 +180,6 @@ namespace Essential.Templating.Razor
 
         private Type ResolveTemplateType(string path, CultureInfo culture, object model)
         {
-            Contract.Requires(culture != null);
             var cacheKey = new TemplateCacheKey(path, culture);
             try
             {
@@ -287,8 +188,9 @@ namespace Essential.Templating.Razor
                 {
                     return cacheItem.TemplateInfo;
                 }
+
                 var templateStream = _resourceProvider.Get(path, culture);
-                var type = _compiler.Compile(templateStream, model.GetType());
+                var type = _compiler.Compile(templateStream, model == null ? null : model.GetType());
                 _cache.Put(cacheKey, type, _cacheExpiration);
                 return type;
             }
@@ -305,25 +207,8 @@ namespace Essential.Templating.Razor
                 throw new TemplateEngineException("Can't resolve template type.", ex);
             }
         }
-
-        private Template ActivateTemplate(Type templateType, TemplateContext context)
+        private Template ActivateTemplate<T>(Type templateType, TemplateContext context, T model)
         {
-            Contract.Requires(templateType != null);
-            Contract.Requires(context != null);
-            try
-            {
-                return _activator.Activate(templateType, context);
-            }
-            catch (Exception ex)
-            {
-                throw new TemplateEngineException(ex);
-            }
-        }
-
-        private ITemplate<T> ActivateTemplate<T>(Type templateType, TemplateContext context, T model)
-        {
-            Contract.Requires(templateType != null);
-            Contract.Requires(context != null);
             try
             {
                 return _activator.Activate(templateType, context, model);
@@ -333,11 +218,8 @@ namespace Essential.Templating.Razor
                 throw new TemplateEngineException(ex);
             }
         }
-
         private Template ActivateTemplate(Type templateType, TemplateContext context, object model)
         {
-            Contract.Requires(templateType != null);
-            Contract.Requires(context != null);
             try
             {
                 return _activator.Activate(templateType, context, model);
@@ -357,22 +239,8 @@ namespace Essential.Templating.Razor
                 _razorTemplateEngine = razorTemplateEngine;
             }
 
-            public Template Resolve(string path, CultureInfo culture, object model)
-            {
-                return _razorTemplateEngine.ResolveTemplate(path, culture, model);
-            }
-
-            public Template Resolve(string path, CultureInfo culture)
-            {
-                return _razorTemplateEngine.ResolveTemplate(path, culture);
-            }
-
-            public Template Resolve(string path, CultureInfo culture, IDictionary<string, object> contextEnvironment)
-            {
-                return _razorTemplateEngine.ResolveTemplate(path, culture, contextEnvironment);
-            }
-
-            public Template Resolve(string path, CultureInfo culture, object model, IDictionary<string, object> contextEnvironment)
+            public Template Resolve(string path, CultureInfo culture, object model,
+                IDictionary<string, object> contextEnvironment)
             {
                 return _razorTemplateEngine.ResolveTemplate(path, culture, model, contextEnvironment);
             }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -20,11 +19,16 @@ namespace Essential.Templating.Common.Storage
 
         public FileSystemResourceProvider(string baseDirectory)
         {
-            Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(baseDirectory));
+            if (string.IsNullOrEmpty(baseDirectory))
+            {
+                throw new ArgumentException("Expected base directory to be not empty.", "baseDirectory");
+            }
+
             if (baseDirectory.Any(x => Path.GetInvalidPathChars().Contains(x)))
             {
                 throw new ArgumentException("Invalid base directory path.", "baseDirectory");
             }
+
             _baseDirectory = baseDirectory;
         }
 
@@ -39,6 +43,7 @@ namespace Essential.Templating.Common.Storage
             {
                 return new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
             }
+
             var builder = new StringBuilder();
             builder.AppendLine("The specified resource was not found. The following files do not exist:");
             paths.ForEach(p => builder.AppendLine(string.Format(" - {0}", p)));
@@ -47,8 +52,6 @@ namespace Essential.Templating.Common.Storage
 
         private IEnumerable<string> EnumeratePaths(string path, CultureInfo culture = null)
         {
-            Contract.Requires(path != null);
-
             var filePath = Path.Combine(_baseDirectory, path.Replace('/', Path.DirectorySeparatorChar));
             var directory = Path.GetDirectoryName(filePath);
             var name = Path.Combine(directory ?? "\\", Path.GetFileNameWithoutExtension(filePath));

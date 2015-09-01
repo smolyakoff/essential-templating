@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
 using System.Drawing;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -9,7 +9,10 @@ namespace Essential.Templating.Common.Storage
     {
         public static Stream ToStream(byte[] array)
         {
-            Contract.Requires(array != null);
+            if (array == null)
+            {
+                throw new ArgumentNullException("array");
+            }
 
             var memoryStream = new MemoryStream(array);
             return memoryStream;
@@ -17,7 +20,10 @@ namespace Essential.Templating.Common.Storage
 
         public static Stream ToStream(Bitmap bitmap)
         {
-            Contract.Requires(bitmap != null);
+            if (bitmap == null)
+            {
+                throw new ArgumentNullException("bitmap");
+            }
 
             var memoryStream = new MemoryStream();
             bitmap.Save(memoryStream, bitmap.RawFormat);
@@ -27,7 +33,10 @@ namespace Essential.Templating.Common.Storage
 
         public static Stream ToStream(object obj)
         {
-            Contract.Requires(obj != null);
+            if (obj == null)
+            {
+                throw new ArgumentNullException("obj");
+            }
 
             var serializer = new BinaryFormatter();
             var memoryStream = new MemoryStream();

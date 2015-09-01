@@ -1,12 +1,9 @@
-﻿using System.Diagnostics.Contracts;
-
-namespace Essential.Templating.Razor.Email
+﻿namespace Essential.Templating.Razor.Email
 {
     internal class EmailTemplateLayout : ExposingTemplate
     {
         public EmailTemplateLayout(TemplateContext templateContext) : base(templateContext)
         {
-            Contract.Requires(templateContext != null);
         }
 
         public override void Execute()

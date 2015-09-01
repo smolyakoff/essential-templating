@@ -1,81 +1,80 @@
-﻿using System.Diagnostics;
-using System.Linq;
-using Essential.Templating.Common;
+﻿using Essential.Templating.Common;
 using Essential.Templating.Common.Configuration;
 using Essential.Templating.Razor.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace Essential.Templating.Razor.Email.Tests
 {
-    [TestClass]
-    [DeploymentItem("Templates", "Templates")]
     public class EmailTemplateTest
     {
+        private readonly ITestOutputHelper _output;
         private readonly ITemplateEngine _templateEngine;
 
-        public EmailTemplateTest()
+        public EmailTemplateTest(ITestOutputHelper output)
         {
+            _output = output;
             _templateEngine = new RazorTemplateEngineBuilder()
                 .FindTemplatesInDirectory("Templates")
                 .UseInstanceCache()
-                .Build();            
+                .Build();
         }
 
-        [TestMethod]
+        [Fact]
         public void RenderSimpleEmail()
         {
             var email = _templateEngine.RenderEmail("SimpleEmail.cshtml");
 
-            Assert.IsNotNull(email);
-            Assert.IsFalse(email.IsBodyHtml);
-            Assert.IsTrue(email.Body.Contains("Plain text"));
-            Assert.IsTrue(email.AlternateViews[0].ContentStream.AsString().Contains("HTML"));
-            Assert.IsTrue(email.Subject == "Simple Email");
-            Assert.IsTrue(email.From.Address == "test@email.com");
+            Assert.NotNull(email);
+            Assert.False(email.IsBodyHtml);
+            Assert.Contains("Plain text", email.Body);
+            Assert.Contains("HTML", email.AlternateViews[0].ContentStream.AsString());
+            Assert.True(email.Subject == "Simple Email");
+            Assert.True(email.From.Address == "test@email.com");
         }
 
-        [TestMethod]
+        [Fact]
         public void RenderSimpleEmailWithNoSections()
         {
             var email = _templateEngine.RenderEmail("SimpleEmailNoSections.cshtml");
 
-            Assert.IsNotNull(email);
-            Assert.IsFalse(email.IsBodyHtml);
-            Assert.IsTrue(email.Body.Contains("Plain text"));
+            Assert.NotNull(email);
+            Assert.False(email.IsBodyHtml);
+            Assert.Contains("Plain text", email.Body);
         }
 
-        [TestMethod]
+        [Fact]
         public void RenderEmailWithModelAndLayout()
         {
             var car = new Car {Make = "Ford", Model = "Mustang"};
-            var email = _templateEngine.RenderEmailAsync("CarMail.cshtml", model: car).Result;
+            var email = _templateEngine.RenderEmailAsync("CarMail.cshtml", car).Result;
 
-            Assert.IsTrue(email != null);
+            Assert.True(email != null);
             var body = email.AlternateViews[0].ContentStream.AsString();
-            Debug.WriteLine(body);
-            Assert.IsTrue(body.Contains("Car Email"));
-            Assert.IsTrue(body.Contains("Ford"));
-            Assert.IsTrue(body.Contains("Mustang"));
+            _output.WriteLine(body);
+            Assert.Contains("Car Email", body);
+            Assert.Contains("Ford", body);
+            Assert.Contains("Mustang", body);
         }
 
-        [TestMethod]
+        [Fact]
         public void RenderEmailWithLinkedResource()
         {
             var email = _templateEngine.RenderEmail("ImageEmail.cshtml");
-            Assert.IsTrue(email != null);
+            Assert.NotNull(email);
             var body = email.AlternateViews[0].ContentStream.AsString();
-            Debug.WriteLine(body);
-            Assert.IsTrue(email.AlternateViews[0].LinkedResources.Any());
+            _output.WriteLine(body);
+            Assert.NotEmpty(email.AlternateViews[0].LinkedResources);
         }
 
-        [TestMethod]
+        [Fact]
         public void RenderEmailWithLinkedResourceInLayout()
         {
             var email = _templateEngine.RenderEmail("ImageEmailWithLayout.cshtml");
-            Assert.IsTrue(email != null);
+            Assert.NotNull(email);
             var body = email.AlternateViews[0].ContentStream.AsString();
-            Debug.WriteLine(body);
-            Assert.IsTrue(email.AlternateViews[0].LinkedResources.Any());
+            _output.WriteLine(body);
+            Assert.NotEmpty(email.AlternateViews[0].LinkedResources);
         }
     }
 }

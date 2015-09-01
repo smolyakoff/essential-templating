@@ -4,7 +4,7 @@ Param
     [String[]] $Targets = @("Common", "Razor", "Razor.Email")
 )
 Import-Module ..\tools\psake\psake.psm1
-Invoke-Psake -Task $TaskName -Properties @{ Targets = $Targets }
+Invoke-Psake -Task $TaskName -Properties @{ Targets = $Targets } -framework "4.5"
 Write-Host `r`nPress any key to continue... -BackgroundColor Blue
 try 
 {

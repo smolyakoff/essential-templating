@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Reflection;
 
@@ -9,7 +9,11 @@ namespace Essential.Templating.Common.Storage
     {
         public static IEnumerable<CultureInfo> GetPossibleCultures(this CultureInfo culture)
         {
-            Contract.Requires(culture != null);
+            if (culture == null)
+            {
+                throw new ArgumentNullException("culture");
+            }
+
             if (culture.Equals(CultureInfo.InvariantCulture))
             {
                 yield return CultureInfo.InvariantCulture;
@@ -25,14 +29,22 @@ namespace Essential.Templating.Common.Storage
         public static bool TryGetSatteliteAssembly(this Assembly assembly, CultureInfo culture,
             out Assembly satteliteAssembly)
         {
-            Contract.Requires(assembly != null);
-            Contract.Requires(culture != null);
+            if (assembly == null)
+            {
+                throw new ArgumentNullException("assembly");
+            }
+
+            if (culture == null)
+            {
+                throw new ArgumentNullException("culture");
+            }
 
             if (culture.Equals(CultureInfo.InvariantCulture))
             {
                 satteliteAssembly = assembly;
                 return true;
             }
+
             try
             {
                 satteliteAssembly = assembly.GetSatelliteAssembly(culture);
@@ -42,6 +54,7 @@ namespace Essential.Templating.Common.Storage
                 satteliteAssembly = null;
                 return false;
             }
+
             return true;
         }
     }

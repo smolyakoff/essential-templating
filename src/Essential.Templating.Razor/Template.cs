@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
 using RazorEngine.Templating;
@@ -14,7 +13,10 @@ namespace Essential.Templating.Razor
 
         public Template(TemplateContext templateContext)
         {
-            Contract.Requires<ArgumentNullException>(templateContext != null);
+            if (templateContext == null)
+            {
+                throw new ArgumentNullException("templateContext");
+            }
 
             _templateContext = templateContext;
         }
@@ -35,6 +37,7 @@ namespace Essential.Templating.Razor
             {
                 return;
             }
+
             var encodedString = value as IEncodedString;
             if (encodedString != null)
             {
@@ -61,40 +64,58 @@ namespace Essential.Templating.Razor
             {
                 return null;
             }
-            var layout = _templateContext.Resolve(name, Culture);
+
+            var layout = _templateContext.Resolve(name, Culture, new Dictionary<string, object>(), GetModel());
             if (layout == null)
             {
                 throw new InvalidOperationException("Layout template was not found.");
             }
+
             return layout;
         }
 
         protected ITemplate ResolveLayout(string name, Dictionary<string, object> contextEnvironment)
         {
-            Contract.Requires(contextEnvironment != null);
+            if (contextEnvironment == null)
+            {
+                throw new ArgumentNullException("contextEnvironment");
+            }
 
             if (string.IsNullOrEmpty(name))
             {
                 return null;
             }
-            var layout = _templateContext.Resolve(name, Culture, contextEnvironment);
+
+            var layout = _templateContext.Resolve(name, Culture, contextEnvironment, GetModel());
             if (layout == null)
             {
                 throw new InvalidOperationException("Layout template was not found.");
             }
+
             return layout;
+        }
+
+        protected virtual object GetModel()
+        {
+            return null;
         }
 
         protected Stream GetResource(string uri, CultureInfo culture = null)
         {
-            Contract.Requires<ArgumentNullException>(!string.IsNullOrEmpty(uri));
+            if (string.IsNullOrEmpty(uri))
+            {
+                throw new ArgumentException("Uri cannot be null or empty.", "uri");
+            }
 
             return _templateContext.ResourceProvider.Get(uri, culture);
         }
 
         protected TemplateContext DeriveContext(string path)
         {
-            Contract.Requires(!string.IsNullOrEmpty(path));
+            if (string.IsNullOrEmpty(path))
+            {
+                throw new ArgumentException("Path cannot be null or empty.", "path");
+            }
 
             return _templateContext.Derive(path);
         }

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Net.Mail;
 using System.Threading.Tasks;
@@ -14,9 +12,20 @@ namespace Essential.Templating.Razor.Email
         public static MailMessage RenderEmail(this ITemplateEngine templateEngine, string path, object viewBag = null,
             CultureInfo culture = null)
         {
-            Contract.Requires<ArgumentNullException>(templateEngine != null);
-            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(path));
-            Contract.Requires<NotSupportedException>(templateEngine.GetType() == typeof(RazorTemplateEngine), "Only razor engine is supported.");
+            if (templateEngine == null)
+            {
+                throw new ArgumentNullException("templateEngine");
+            }
+
+            if (string.IsNullOrEmpty(path))
+            {
+                throw new ArgumentException("Path cannot be null or empty.", "path");
+            }
+
+            if (templateEngine.GetType() != typeof(RazorTemplateEngine))
+            {
+                throw new NotSupportedException("Only razor engine is supported.");
+            }
 
             return templateEngine.Render(path, renderer: new EmailRenderer(), viewBag: viewBag, culture: culture);
         }
@@ -25,19 +34,42 @@ namespace Essential.Templating.Razor.Email
             object viewBag = null,
             CultureInfo culture = null)
         {
-            Contract.Requires<ArgumentNullException>(templateEngine != null);
-            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(path));
-            Contract.Requires<NotSupportedException>(templateEngine.GetType() == typeof(RazorTemplateEngine), "Only razor engine is supported.");
+            if (templateEngine == null)
+            {
+                throw new ArgumentNullException("templateEngine");
+            }
 
-            return templateEngine.Render(path, renderer: new EmailRenderer(), model: model, viewBag: viewBag, culture: culture);
+            if (string.IsNullOrEmpty(path))
+            {
+                throw new ArgumentException("Path cannot be null or empty.", "path");
+            }
+
+            if (templateEngine.GetType() != typeof(RazorTemplateEngine))
+            {
+                throw new NotSupportedException("Only razor engine is supported.");
+            }
+
+            return templateEngine.Render(path, new EmailRenderer(), model, viewBag, culture);
         }
 
-        public static Task<MailMessage> RenderEmailAsync(this ITemplateEngine templateEngine, string path, object viewBag = null,
+        public static Task<MailMessage> RenderEmailAsync(this ITemplateEngine templateEngine, string path,
+            object viewBag = null,
             CultureInfo culture = null)
         {
-            Contract.Requires<ArgumentNullException>(templateEngine != null);
-            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(path));
-            Contract.Requires<NotSupportedException>(templateEngine.GetType() == typeof(RazorTemplateEngine), "Only razor engine is supported.");
+            if (templateEngine == null)
+            {
+                throw new ArgumentNullException("templateEngine");
+            }
+
+            if (string.IsNullOrEmpty(path))
+            {
+                throw new ArgumentException("Path cannot be null or empty.", "path");
+            }
+
+            if (templateEngine.GetType() != typeof(RazorTemplateEngine))
+            {
+                throw new NotSupportedException("Only razor engine is supported.");
+            }
 
             return templateEngine.RenderAsync(path, renderer: new EmailRenderer(), viewBag: viewBag, culture: culture);
         }
@@ -46,11 +78,22 @@ namespace Essential.Templating.Razor.Email
             object viewBag = null,
             CultureInfo culture = null)
         {
-            Contract.Requires<ArgumentNullException>(templateEngine != null);
-            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(path));
-            Contract.Requires<NotSupportedException>(templateEngine.GetType() == typeof(RazorTemplateEngine), "Only razor engine is supported.");
+            if (templateEngine == null)
+            {
+                throw new ArgumentNullException("templateEngine");
+            }
 
-            return templateEngine.RenderAsync(path, renderer: new EmailRenderer(), model: model, viewBag: viewBag, culture: culture);
+            if (string.IsNullOrEmpty(path))
+            {
+                throw new ArgumentException("Path cannot be null or empty.", "path");
+            }
+
+            if (templateEngine.GetType() != typeof(RazorTemplateEngine))
+            {
+                throw new NotSupportedException("Only razor engine is supported.");
+            }
+
+            return templateEngine.RenderAsync(path, new EmailRenderer(), model, viewBag, culture);
         }
     }
 }

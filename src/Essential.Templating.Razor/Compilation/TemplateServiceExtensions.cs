@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Threading.Tasks;
 using RazorEngine;
@@ -11,9 +10,15 @@ namespace Essential.Templating.Razor.Compilation
     {
         public static Type Compile(this ITemplateService razorService, Stream templateStream, Type modelType)
         {
-            Contract.Requires(razorService != null);
-            Contract.Requires(templateStream != null);
-            Contract.Ensures(Contract.Result<Type>() != null);
+            if (razorService == null)
+            {
+                throw new ArgumentNullException("razorService");
+            }
+
+            if (templateStream == null)
+            {
+                throw new ArgumentNullException("templateStream");
+            }
 
             Type type;
             try
@@ -28,18 +33,27 @@ namespace Essential.Templating.Razor.Compilation
             {
                 throw new CompilationException(ex);
             }
+
             if (type == null)
             {
                 throw new CompilationException();
             }
+
             return type;
         }
 
         public static async Task<Type> CompileAsync(this ITemplateService razorService, Stream templateStream,
             Type modelType)
         {
-            Contract.Requires(templateStream != null);
-            Contract.Ensures(Contract.Result<Type>() != null);
+            if (razorService == null)
+            {
+                throw new ArgumentNullException("razorService");
+            }
+
+            if (templateStream == null)
+            {
+                throw new ArgumentNullException("templateStream");
+            }
 
             Type type;
             try
@@ -54,10 +68,12 @@ namespace Essential.Templating.Razor.Compilation
             {
                 throw new CompilationException(ex);
             }
+
             if (type == null)
             {
                 throw new CompilationException();
             }
+
             return type;
         }
 

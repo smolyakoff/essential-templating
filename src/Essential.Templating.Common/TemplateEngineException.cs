@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 
 namespace Essential.Templating.Common
 {
@@ -7,20 +6,25 @@ namespace Essential.Templating.Common
     {
         private readonly string _message;
 
-        public TemplateEngineException(string message)
-        {
-            _message = message;
-        }
-
         public TemplateEngineException(Exception innerException) : base(null, innerException)
         {
-            Contract.Requires(innerException != null);
+            if (innerException == null)
+            {
+                throw new ArgumentNullException("innerException");
+            }
         }
 
         public TemplateEngineException(string message, Exception innerException) : base(message, innerException)
         {
-            Contract.Requires(!string.IsNullOrEmpty(message));
-            Contract.Requires(innerException != null);
+            if (string.IsNullOrEmpty(message))
+            {
+                throw new ArgumentException("Value cannot be null or empty.", "message");
+            }
+
+            if (innerException == null)
+            {
+                throw new ArgumentNullException("innerException");
+            }
 
             _message = message;
         }
@@ -36,14 +40,17 @@ namespace Essential.Templating.Common
             {
                 return base.Message;
             }
+
             if (string.IsNullOrEmpty(_message) && InnerException != null)
             {
                 return InnerException.Message;
             }
+
             if (InnerException != null)
             {
                 return string.Format("{0}{1}{2}", _message, Environment.NewLine, InnerException.Message);
             }
+
             return _message;
         }
     }

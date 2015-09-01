@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 
 namespace Essential.Templating.Common.Storage
@@ -14,7 +13,10 @@ namespace Essential.Templating.Common.Storage
 
         public LocalizedName(string localizedName)
         {
-            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(localizedName));
+            if (string.IsNullOrEmpty(localizedName))
+            {
+                throw new ArgumentException("Localized name cannot be null or empty.", "localizedName");
+            }
 
             string name;
             CultureInfo culture;
@@ -26,9 +28,12 @@ namespace Essential.Templating.Common.Storage
 
         public LocalizedName(string name, CultureInfo culture)
         {
-            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(name));
-            culture = culture ?? CultureInfo.InvariantCulture;
+            if (string.IsNullOrEmpty(name))
+            {
+                throw new ArgumentException("Name cannot be null or empty.", "name");
+            }
 
+            culture = culture ?? CultureInfo.InvariantCulture;
             _name = name;
             _culture = culture;
         }
@@ -60,18 +65,19 @@ namespace Essential.Templating.Common.Storage
             {
                 var mostSpecificName = ToString();
                 yield return mostSpecificName;
-                var languageOnlyName = string.Format("{0}{1}{2}", _name, CultureDelimiter, _culture.TwoLetterISOLanguageName);
+                var languageOnlyName =
+                    string.Format("{0}{1}{2}", _name, CultureDelimiter, _culture.TwoLetterISOLanguageName);
                 if (!string.Equals(mostSpecificName, languageOnlyName, StringComparison.Ordinal))
                 {
                     yield return languageOnlyName;
                 }
+
                 yield return Name;
             }
         }
 
         private static void Extract(string localizedName, out string name, out CultureInfo culture)
         {
-            Contract.Requires(localizedName != null);
             var delimiterIndex = localizedName.LastIndexOf(CultureDelimiter);
             if (delimiterIndex < 0)
             {
@@ -79,6 +85,7 @@ namespace Essential.Templating.Common.Storage
                 culture = CultureInfo.InvariantCulture;
                 return;
             }
+
             var cultureString = localizedName.Substring(delimiterIndex + 1);
             try
             {

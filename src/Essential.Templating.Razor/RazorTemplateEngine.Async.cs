@@ -9,7 +9,6 @@ using Essential.Templating.Common.Storage;
 using Essential.Templating.Razor.Compilation;
 using Essential.Templating.Razor.Rendering;
 using Essential.Templating.Razor.Runtime;
-using RazorEngine.Templating;
 
 namespace Essential.Templating.Razor
 {
@@ -20,20 +19,16 @@ namespace Essential.Templating.Razor
             return RenderAsync(path, renderer: new StringRenderer(), viewBag: viewBag, culture: culture);
         }
 
-        public async Task<string> RenderAsync<T>(string path, T model, object viewBag = null, CultureInfo culture = null)
+        public async Task<string> RenderAsync<T>(string path, T model, object viewBag = null,
+            CultureInfo culture = null)
         {
             culture = culture ?? Thread.CurrentThread.CurrentCulture;
 
             var template = await ResolveTemplateAsync(path, culture, model);
             try
             {
-                var concreteTemplate = template as Template;
-                if (concreteTemplate == null)
-                {
-                    throw new TypeMismatchException(template.GetType(), typeof (Template));
-                }
                 var renderer = new StringRenderer();
-                return await Task.Run(() => renderer.Render(concreteTemplate, viewBag));
+                return await Task.Run(() => renderer.Render(template, viewBag));
             }
             catch (Exception ex)
             {
@@ -48,14 +43,15 @@ namespace Essential.Templating.Razor
         {
             culture = culture ?? Thread.CurrentThread.CurrentCulture;
 
-            var template = await ResolveTemplateAsync(path, culture);
+            var template = await ResolveTemplateAsync(path, culture, null);
             try
             {
                 var concreteTemplate = template as TTemplate;
                 if (concreteTemplate == null)
                 {
-                    throw new TypeMismatchException(template.GetType(), typeof (TTemplate));
+                    throw new TypeMismatchException(template.GetType(), typeof(TTemplate));
                 }
+
                 return await Task.Run(() => renderer.Render(concreteTemplate, viewBag));
             }
             catch (Exception ex)
@@ -77,8 +73,9 @@ namespace Essential.Templating.Razor
                 var concreteTemplate = template as TTemplate;
                 if (concreteTemplate == null)
                 {
-                    throw new TypeMismatchException(template.GetType(), typeof (TTemplate));
+                    throw new TypeMismatchException(template.GetType(), typeof(TTemplate));
                 }
+
                 return await Task.Run(() => renderer.Render(concreteTemplate, viewBag));
             }
             catch (Exception ex)
@@ -87,14 +84,14 @@ namespace Essential.Templating.Razor
             }
         }
 
-        private async Task<Template> ResolveTemplateAsync(string path, CultureInfo culture)
+        private async Task<Template> ResolveTemplateAsync(string path, CultureInfo culture, object model)
         {
             var type = await ResolveTemplateTypeAsync(path, culture);
             return ActivateTemplate(type,
-                new TemplateContext(path, culture, _resourceProvider, new Tool(this)));
+                new TemplateContext(path, culture, _resourceProvider, new Tool(this)), model);
         }
 
-        private async Task<ITemplate<T>> ResolveTemplateAsync<T>(string path, CultureInfo culture, T model)
+        private async Task<Template> ResolveTemplateAsync<T>(string path, CultureInfo culture, T model)
         {
             var type = await ResolveTemplateTypeAsync<T>(path, culture);
             return ActivateTemplate(type,
@@ -111,8 +108,9 @@ namespace Essential.Templating.Razor
                 {
                     return cacheItem.TemplateInfo;
                 }
+
                 var templateStream = _resourceProvider.Get(path, culture);
-                var type = await _compiler.CompileAsync(templateStream);
+                var type = await _compiler.CompileAsync(templateStream, null);
                 _cache.Put(cacheKey, type, _cacheExpiration);
                 return type;
             }
@@ -140,8 +138,9 @@ namespace Essential.Templating.Razor
                 {
                     return cacheItem.TemplateInfo;
                 }
+
                 var templateStream = _resourceProvider.Get(path, culture);
-                var type = await _compiler.CompileAsync(templateStream, typeof (T));
+                var type = await _compiler.CompileAsync(templateStream, typeof(T));
                 _cache.Put(cacheKey, type, _cacheExpiration);
                 return type;
             }

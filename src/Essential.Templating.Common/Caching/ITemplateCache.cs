@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
-using Essential.Templating.Common.Contracts;
 
 namespace Essential.Templating.Common.Caching
 {
-    [ContractClass(typeof(TemplateCacheContracts<>))]
     public interface ITemplateCache<T>
     {
         bool ContainsKey(TemplateCacheKey key);

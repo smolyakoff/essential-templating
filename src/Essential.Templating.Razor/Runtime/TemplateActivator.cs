@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
-using RazorEngine.Templating;
 
 namespace Essential.Templating.Razor.Runtime
 {
@@ -10,15 +8,26 @@ namespace Essential.Templating.Razor.Runtime
 
         public TemplateActivator(ITemplateFactory templateFactory)
         {
-            Contract.Requires(templateFactory != null);
+            if (templateFactory == null)
+            {
+                throw new ArgumentNullException("templateFactory");
+            }
 
             _templateFactory = templateFactory;
         }
 
         public Template Activate(Type templateType, TemplateContext context)
         {
-            Contract.Requires(templateType != null);
-            Contract.Requires(context != null);
+            if (templateType == null)
+            {
+                throw new ArgumentNullException("templateType");
+            }
+
+            if (context == null)
+            {
+                throw new ArgumentNullException("context");
+            }
+
 
             Template template = null;
             try
@@ -29,47 +38,42 @@ namespace Essential.Templating.Razor.Runtime
             {
                 throw new ActivatorException(templateType, ex);
             }
+
             if (template == null)
             {
                 throw new ActivatorException(templateType);
             }
+
             return template;
-        }
-
-        public ITemplate<T> Activate<T>(Type templateType, TemplateContext context, T model)
-        {
-            Contract.Requires(templateType != null);
-            Contract.Requires(context != null);
-
-            var template = Activate(templateType, context);
-            var templateWithModel = template as ITemplate<T>;
-            if (templateWithModel == null)
-            {
-                throw new TypeMismatchException(templateType, typeof (ITemplate<T>));
-            }
-            templateWithModel.Model = model;
-            return templateWithModel;
         }
 
         public Template Activate(Type templateType, TemplateContext context, object model)
         {
-            Contract.Requires(templateType != null);
-            Contract.Requires(context != null);
+            if (templateType == null)
+            {
+                throw new ArgumentNullException("templateType");
+            }
+
+            if (context == null)
+            {
+                throw new ArgumentNullException("context");
+            }
 
             var template = Activate(templateType, context);
-            var property = template.GetType().GetProperty("Model");
-            if (property == null)
+            if (model != null)
             {
-                throw new TypeMismatchException(templateType, typeof (Template));
+                try
+                {
+                    template.SetModel(model);
+                }
+                catch (Exception ex)
+                {
+                    throw new ActivatorException(templateType, ex);
+                }
+
+                return template;
             }
-            try
-            {
-                property.SetValue(template, model);
-            }
-            catch (Exception ex)
-            {
-                throw new ActivatorException(templateType, ex);
-            }
+
             return template;
         }
     }

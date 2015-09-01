@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Text;
 using Essential.Templating.Razor.Rendering;
@@ -17,7 +16,6 @@ namespace Essential.Templating.Razor
         public ExposingTemplate(TemplateContext templateContext)
             : base(templateContext)
         {
-            Contract.Requires<ArgumentNullException>(templateContext != null);
         }
 
         void IExposingTemplate.Run(ITemplateVisitor templateVisitor, object viewBag)
@@ -27,11 +25,12 @@ namespace Essential.Templating.Razor
                 _templateVisitor = templateVisitor;
                 using (var writer = new StringWriter())
                 {
-                    this.SetData(null, new ObjectViewBag(viewBag));
-                    ((ITemplate)this).Run(new ExecuteContext(), writer);
+                    SetData(null, new ObjectViewBag(viewBag));
+                    ((ITemplate) this).Run(new ExecuteContext(), writer);
                     var body = writer.GetStringBuilder().ToString();
                     _templateVisitor.Body(body);
                 }
+
                 _templateVisitor = null;
             }
         }
@@ -48,6 +47,7 @@ namespace Essential.Templating.Razor
                 OnEnd();
                 _executeContextAdapter.CurrentWriter = null;
             }
+
             var parent = ResolveLayout(Layout);
             if (parent == null && string.IsNullOrEmpty(Layout))
             {
@@ -55,16 +55,19 @@ namespace Essential.Templating.Razor
                 textWriter.Write(result);
                 return;
             }
+
             if (parent == null)
             {
                 throw new InvalidOperationException("Layout template was not found.");
             }
+
             parent.SetData(null, ViewBag);
             var exposingParent = parent as ExposingTemplate;
             if (exposingParent == null)
             {
                 throw new InvalidOperationException("Unexpected layout template base type.");
             }
+
             exposingParent._templateVisitor = _templateVisitor;
             var bodyWriter = new TemplateWriter(tw => tw.Write(builder.ToString()));
             _executeContextAdapter.PushBody(bodyWriter);
@@ -80,6 +83,7 @@ namespace Essential.Templating.Razor
             {
                 return base.RenderSection(name, isRequired);
             }
+
             var builder = ((StringWriter) _executeContextAdapter.CurrentWriter).GetStringBuilder();
             var start = builder.Length;
             var writer = base.RenderSection(name, isRequired);
@@ -107,7 +111,5 @@ namespace Essential.Templating.Razor
                 _templateVisitor.End(this);
             }
         }
-
-
     }
 }

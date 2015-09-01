@@ -1,93 +1,89 @@
 ﻿using System.Globalization;
 using System.IO;
 using Essential.Templating.Common.Storage;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Essential.Templating.Common.Tests
 {
-    [TestClass]
-    [DeploymentItem("Templates", "Templates")]
-    [DeploymentItem(@"ru\Essential.Templating.Common.Tests.resources.dll", "ru")]
     public class ResourceProviderTest
     {
-        [TestMethod]
+        [Fact]
         public void FileSystemProvider_CanFindExistingResource()
         {
             var provider = new FileSystemResourceProvider("Templates");
             var resource = provider.Get("Template.tmpl");
 
-            Assert.IsNotNull(resource);
-            Assert.IsTrue(resource.Length > 0);
+            Assert.NotNull(resource);
+            Assert.True(resource.Length > 0);
         }
 
-        [TestMethod]
+        [Fact]
         public void ResxClassProvider_CanFindExistingResource()
         {
             var provider = ResxClassResourceProvider<ResxResource>.Create();
             var resource = provider.Get("ResourceTemplate");
 
-            Assert.IsNotNull(resource);
-            Assert.IsTrue(resource.Length > 0);
+            Assert.NotNull(resource);
+            Assert.True(resource.Length > 0);
         }
 
-        [TestMethod]
+        [Fact]
         public void EmbeddedResourceProvider_CanFindExistingResource()
         {
             var provider = new EmbeddedResourceProvider();
             var resource = provider.Get("Templates/EmbeddedResourceTemplate.tmpl");
 
-            Assert.IsNotNull(resource);
-            Assert.IsTrue(resource.Length > 0);
+            Assert.NotNull(resource);
+            Assert.True(resource.Length > 0);
         }
 
-        [TestMethod]
+        [Fact]
         public void FileSystemProvider_CanFindLocalizedResource()
         {
             var provider = new FileSystemResourceProvider("Templates");
             var resource = provider.Get("Template.tmpl", new CultureInfo("ru-RU"));
 
-            Assert.IsNotNull(resource);
+            Assert.NotNull(resource);
             using (var streamReader = new StreamReader(resource))
             {
                 var templateString = streamReader.ReadToEnd();
-                Assert.IsTrue(templateString.Contains("русском"));
+                Assert.Contains( "русском", templateString);
             }
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ResourceNotFoundException))]
+        [Fact]
         public void FileSystemProvider_ThrowsResourceNotFoundException_WhenResourceIsNotFound()
         {
             var provider = new FileSystemResourceProvider("Templates");
 
-            var resource = provider.Get("TemplateNotFound.tmpl", new CultureInfo("en"));
+            Assert.Throws<ResourceNotFoundException>(() => provider.Get("TemplateNotFound.tmpl", new CultureInfo("en")));
         }
 
-        [TestMethod]
+        [Fact]
         public void ResxClassProvider_CanFindLocalizedResource()
         {
             var provider = ResxClassResourceProvider<ResxResource>.Create();
             var resource = provider.Get("ResourceTemplate", new CultureInfo("ru-RU"));
 
-            Assert.IsNotNull(resource);
+            Assert.NotNull(resource);
             using (var streamReader = new StreamReader(resource))
             {
                 var templateString = streamReader.ReadToEnd();
-                Assert.IsTrue(templateString.Contains("русском"));
+                Assert.Contains("русском", templateString);
             }
         }
 
-        [TestMethod]
+        [Fact]
         public void EmbeddedResourceProvider_CanFindLocalizedResource()
         {
             var provider = new EmbeddedResourceProvider();
             var resource = provider.Get("Templates/EmbeddedResourceTemplate.tmpl", new CultureInfo("ru-RU"));
 
-            Assert.IsNotNull(resource);
+            Assert.NotNull(resource);
             using (var streamReader = new StreamReader(resource))
             {
                 var templateString = streamReader.ReadToEnd();
-                Assert.IsTrue(templateString.Contains("русском"));
+                Assert.Contains("русском", templateString);
             }
         }
     }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics.Contracts;
+﻿using System.Diagnostics;
 using RazorEngine.Templating;
 
 namespace Essential.Templating.Razor.Email
@@ -8,7 +7,19 @@ namespace Essential.Templating.Razor.Email
     {
         public EmailTemplate(TemplateContext templateContext) : base(templateContext)
         {
-            Contract.Requires<ArgumentNullException>(templateContext != null);
+        }
+
+        public override void SetModel(object model)
+        {
+            if (model is T)
+            {
+                Model = (T) model;
+            }
+        }
+
+        protected override object GetModel()
+        {
+            return Model;
         }
 
         public T Model { get; set; }

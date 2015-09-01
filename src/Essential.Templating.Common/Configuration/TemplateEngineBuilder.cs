@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using Essential.Templating.Common.Caching;
 using Essential.Templating.Common.Storage;
 
@@ -9,11 +8,15 @@ namespace Essential.Templating.Common.Configuration
     public abstract class TemplateEngineBuilder<T>
         where T : TemplateEngineConfiguration
     {
-        private readonly List<Action<T>> _changes = new List<Action<T>>(); 
+        private readonly List<Action<T>> _changes = new List<Action<T>>();
 
         public TemplateEngineBuilder<T> LocateResourcesWith(IResourceProvider resourceProvider)
         {
-            Contract.Requires<ArgumentNullException>(resourceProvider != null);
+            if (resourceProvider == null)
+            {
+                throw new ArgumentNullException("resourceProvider");
+            }
+
 
             Configure(c => c.ResourceProvider = resourceProvider);
             return this;
@@ -27,7 +30,10 @@ namespace Essential.Templating.Common.Configuration
 
         public TemplateEngineBuilder<T> CacheExpiresIn(TimeSpan expiration)
         {
-            Contract.Requires<ArgumentException>(expiration.Ticks > 0);
+            if (expiration <= TimeSpan.Zero)
+            {
+                throw new ArgumentOutOfRangeException("expiration", "Expected expiration to be positive.");
+            }
 
             Configure(c => c.CacheExpiration = expiration);
             return this;
@@ -35,14 +41,10 @@ namespace Essential.Templating.Common.Configuration
 
         public ITemplateEngine Build()
         {
-            Contract.Ensures(Contract.Result<ITemplateEngine>() != null);
             try
             {
                 var configuration = CreateDefaultConfiguration();
-                foreach (var change in _changes)
-                {
-                    change(configuration);
-                }
+                foreach (var change in _changes) change(configuration);
                 return Build(configuration);
             }
             catch (Exception ex)
@@ -57,7 +59,11 @@ namespace Essential.Templating.Common.Configuration
 
         protected void Configure(Action<T> configurator)
         {
-            Contract.Requires(configurator != null);
+            if (configurator == null)
+            {
+                throw new ArgumentNullException("configurator");
+            }
+
             _changes.Add(configurator);
         }
     }

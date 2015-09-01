@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -18,22 +16,27 @@ namespace Essential.Templating.Common.Storage
 
         public EmbeddedResourceProvider(Assembly baseAssembly, string baseNamespace)
         {
-            Contract.Requires<ArgumentNullException>(baseAssembly != null);
-            Contract.Requires<ArgumentException>(!string.IsNullOrEmpty(baseNamespace), "Base namespace should not be empty.");
+            if (baseAssembly == null)
+            {
+                throw new ArgumentNullException("baseAssembly");
+            }
+
+            if (string.IsNullOrEmpty(baseNamespace))
+            {
+                throw new ArgumentException("Base namespace cannot be null or empty.", "baseNamespace");
+            }
 
             _baseAssembly = baseAssembly;
             _baseNamespace = baseNamespace;
-            
         }
 
         public EmbeddedResourceProvider(Assembly baseAssembly)
             : this(baseAssembly, baseAssembly.GetName().Name)
         {
-            Contract.Requires<ArgumentNullException>(baseAssembly != null);
         }
 
         public EmbeddedResourceProvider()
-            :this(Assembly.GetCallingAssembly())
+            : this(Assembly.GetCallingAssembly())
         {
         }
 
@@ -49,6 +52,7 @@ namespace Essential.Templating.Common.Storage
                 {
                     continue;
                 }
+
                 attemptedAssemblies.Add(cultureAssembly);
                 var stream = cultureAssembly.GetManifestResourceStream(fullName);
                 if (stream != null)
@@ -56,19 +60,17 @@ namespace Essential.Templating.Common.Storage
                     return stream;
                 }
             }
+
             var messageBuilder = new StringBuilder();
             messageBuilder.AppendLine("The specified resource was not found.")
                 .AppendLine(string.Format("Resource name: {0}. Attempted assemblies:", fullName));
             foreach (var attemptedAssembly in attemptedAssemblies)
-            {
                 messageBuilder.AppendLine(string.Format(" - {0}", attemptedAssembly.FullName));
-            }
             throw new ResourceNotFoundException(messageBuilder.ToString(), path);
         }
 
         private string ToFullNameWithNamespace(string path)
         {
-            Contract.Requires(!string.IsNullOrEmpty(path));
             var className = path.Replace("/", ".").Replace("\\", ".").TrimStart('.');
             var fullName = string.Format("{0}.{1}", _baseNamespace, className);
             return fullName;

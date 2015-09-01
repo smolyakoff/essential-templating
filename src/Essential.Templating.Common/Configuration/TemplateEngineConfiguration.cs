@@ -32,6 +32,7 @@ namespace Essential.Templating.Common.Configuration
             {
                 throw new ArgumentNullException(propertyName, "Property is required.");
             }
+
             property = value;
         }
     }

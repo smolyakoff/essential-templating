@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 
 namespace Essential.Templating.Razor.Runtime
 {
@@ -7,7 +6,10 @@ namespace Essential.Templating.Razor.Runtime
     {
         public ActivatorException(Type templateType)
         {
-            Contract.Requires(templateType != null);
+            if (templateType == null)
+            {
+                throw new ArgumentNullException("templateType");
+            }
 
             TemplateType = templateType;
         }

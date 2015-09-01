@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System;
+using System.Collections.Generic;
 using System.Net.Mail;
 
 namespace Essential.Templating.Razor.Email.Rendering
@@ -8,7 +8,10 @@ namespace Essential.Templating.Razor.Email.Rendering
     {
         public static MailMessage Render(this EmailTemplate template, object viewBag)
         {
-            Contract.Requires(template != null);
+            if (template == null)
+            {
+                throw new ArgumentNullException("template");
+            }
 
             var visitor = new EmailTemplateVisitor();
             var exposingTemplate = (IExposingTemplate) template;
@@ -25,6 +28,7 @@ namespace Essential.Templating.Razor.Email.Rendering
             {
                 message.From = template.From;
             }
+
             message.Headers.Add(template.Headers);
             message.HeadersEncoding = template.HeadersEncoding;
             message.Priority = template.Priority;
@@ -37,25 +41,37 @@ namespace Essential.Templating.Razor.Email.Rendering
             if (template.LinkedResources.Count > 0 && message.AlternateViews.Count > 0)
             {
                 message.AlternateViews[0].LinkedResources.CopyFrom(template.LinkedResources);
-            } 
+            }
+
             return message;
         }
 
         internal static void CopyTo<T>(this IEnumerable<T> source, ICollection<T> destination)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(destination != null);
-
-            foreach (var item in source)
+            if (source == null)
             {
-                destination.Add(item);
+                throw new ArgumentNullException("source");
             }
+
+            if (destination == null)
+            {
+                throw new ArgumentNullException("destination");
+            }
+
+            foreach (var item in source) destination.Add(item);
         }
 
         internal static void CopyFrom<T>(this ICollection<T> destination, IEnumerable<T> source)
         {
-            Contract.Requires(source != null);
-            Contract.Requires(destination != null);
+            if (destination == null)
+            {
+                throw new ArgumentNullException("destination");
+            }
+
+            if (source == null)
+            {
+                throw new ArgumentNullException("source");
+            }
 
             source.CopyTo(destination);
         }

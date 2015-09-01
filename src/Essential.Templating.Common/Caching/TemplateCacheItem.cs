@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
 using System.Globalization;
 
 namespace Essential.Templating.Common.Caching
@@ -11,7 +11,10 @@ namespace Essential.Templating.Common.Caching
 
         public TemplateCacheItem(TemplateCacheKey key, T templateInfo)
         {
-            Contract.Requires(key != null);
+            if (key == null)
+            {
+                throw new ArgumentNullException("key");
+            }
 
             _key = key;
             _templateInfo = templateInfo;

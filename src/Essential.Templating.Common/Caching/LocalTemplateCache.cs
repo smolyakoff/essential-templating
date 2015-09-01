@@ -28,6 +28,7 @@ namespace Essential.Templating.Common.Caching
             {
                 return null;
             }
+
             item.LastAccessTime = DateTime.UtcNow;
             return item.Item;
         }
@@ -38,12 +39,14 @@ namespace Essential.Templating.Common.Caching
             {
                 return null;
             }
+
             var item = _cache[key];
             if (item.LastAccessTime + item.SlidingExpiration < DateTime.UtcNow)
             {
                 _cache.TryRemove(key, out item);
                 return null;
             }
+
             return item;
         }
     }

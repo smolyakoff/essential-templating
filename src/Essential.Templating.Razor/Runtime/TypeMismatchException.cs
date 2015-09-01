@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics.Contracts;
 
 namespace Essential.Templating.Razor.Runtime
 {
@@ -8,8 +7,10 @@ namespace Essential.Templating.Razor.Runtime
         public TypeMismatchException(Type templateType, Type expectedBaseTemplateType)
             : base(templateType)
         {
-            Contract.Requires(templateType != null);
-            Contract.Requires(expectedBaseTemplateType != null);
+            if (expectedBaseTemplateType == null)
+            {
+                throw new ArgumentNullException("expectedBaseTemplateType");
+            }
 
             ExpectedBaseTemplateType = expectedBaseTemplateType;
         }

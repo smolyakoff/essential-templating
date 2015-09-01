@@ -1,0 +1,5 @@
+﻿@inherits Essential.Templating.Razor.ExposingTemplate<Essential.Templating.Razor.Tests.Helpers.Person>
+@{
+    Layout = "LayoutWithModel.cshtml";
+}
+Hello, @Model.FirstName @Model.LastName!

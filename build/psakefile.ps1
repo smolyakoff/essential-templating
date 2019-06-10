@@ -37,7 +37,7 @@ Task Publish -Depends Package {
         try {
             [Xml]$nuspec = Get-Content $DeployDir\$($package.Name)\$($package.Name).nuspec
             $packageFile = "$DeployDir\$($package.Name)\$($package.Name).$($nuspec.package.metadata.version).nupkg"
-            Exec { &$NuGetFile push $packageFile $apiKey }
+            Exec { &$NuGetFile push $packageFile $apiKey -src https://api.nuget.org/v3/index.json  }
             Log-Message "Package $($package.Name) was successfully published." Success
         } catch [Exception] {
             Log-Message "Failed to publish a package: $($_.Exception.Message)" Error

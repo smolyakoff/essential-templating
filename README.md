@@ -1,24 +1,34 @@
-Essential Templating [![Analytics](https://ga-beacon.appspot.com/UA-61414371-1/smolyakoff/essential-templating)](https://github.com/igrigorik/ga-beacon)
-=========
+# Essential Templating [![Analytics](https://ga-beacon.appspot.com/UA-61414371-1/smolyakoff/essential-templating)](https://github.com/igrigorik/ga-beacon)
 
-Essential Templating is a set of libraries to render templated objects (like web pages or emails).
-  - Provides easy to use template engine interface with C# 5.0 async methods.
-  - Unified template location (now you can use  files or .resx resources).
-  - Localization support.
+Essential Templating is a set of libraries to render templated objects (like web pages, documents or emails).
 
-Essential.Templating.Razor
-------------
-Template engine implementation based on [RazorEngine by Antaris]
+- Allows to render complex objects from a single-file template.
+- Provides easy to use template engine interface with C# 5.0 async methods.
+- Unified template location (you can use files or .resx resources).
+- Localization support.
 
-**Basic usage**
-Template is located in "Hello.cshtml" file under "Templates" directory.
+## ⚠️ Deprecation Notice
+
+This package is not actively maintained anymore due to lack of time and the amount of existing libraries that do similar things. There are many alternatives you can consider:
+
+- [RazorEngine](https://github.com/Antaris/RazorEngine)
+- [RazorGenerator](https://github.com/RazorGenerator/RazorGenerator)
+- [RazorLight](https://github.com/toddams/RazorLight)
+- [FluentEmail](https://github.com/lukencode/FluentEmail)
+- [Scrutor](https://github.com/khellang/Scrutor)
+
+## Render text using Razor templates
+
+The [Essential.Templating.Razor](https://www.nuget.org/packages/Essential.Templating.Razor) package allows you to render text using Razor templates. The implementation is based on [RazorEngine](https://github.com/Antaris/RazorEngine) which makes it easy to render templates without using ASP.NET MVC.
+
+Assuming the template is located in `Hello.cshtml` file under `Templates` directory. Make sure the template is copied to the output directory.
 
 ```html
 @inherits Essential.Templating.Razor.Template
 Hello, @ViewBag.Name!
 ```
 
-How to render the template?
+To render a template to a `System.String` create an instance of `ITemplateEngine` and call the `Render` method.
 
 ```csharp
 ITemplateEngine engine = new RazorTemplateEngineBuilder()
@@ -29,12 +39,47 @@ ITemplateEngine engine = new RazorTemplateEngineBuilder()
 string template = engine.Render(path: "Hello.cshtml", viewBag: new {Name = "John"});
 ```
 
-What will we get as a result?
-`Hello, John!` 
+The rendered result should look as follows:
 
-Essential.Templating.Razor.Email
----------------------------------------
-Render razor pages as emails. See more at [wiki](https://github.com/smolyakoff/essential-templating/wiki/Email-Template-with-Razor).
+```txt
+Hello, John!
+```
 
-*To be continued...*
-[RazorEngine by Antaris]:https://github.com/Antaris/RazorEngine
+## Render emails using Razor templates
+
+The [Essential.Templating.Razor.Email](https://www.nuget.org/packages/Essential.Templating.Razor) package allows to render `System.Net.MailMessage` instances from Razor templates. Both HTML and text bodies are supported and can be specified using Razor section syntax.
+
+Assuming that you have a following template in `Email.cshtml` file under `Templates` directory.
+
+```html
+@inherits Essential.Templating.Razor.Email.EmailTemplate
+@using System.Net;
+@{
+    From = new MailAddress("example@email.com");
+    Subject = "Email Subject";
+}
+@section Html
+{
+   <html>
+      <head>
+          <title>Example</title>
+      </head>
+      <body>
+          <h1>HTML part of the email</h1>
+      </body>
+   </html>
+}
+@section Text 
+{
+    Text part of the email.
+}
+```
+
+To get a `System.Net.MailMessage` object from this template use the following code:
+
+```csharp
+ITemplateEngine engine = new RazorTemplateEngineBuilder()
+                            .FindTemplatesInDirectory("Templates")
+                            .Build();
+MailMessage email = engine.RenderEmail("Email.cshtml");
+```

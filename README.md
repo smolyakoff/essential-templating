@@ -15,7 +15,7 @@ This package is not actively maintained anymore due to lack of time and the amou
 - [RazorGenerator](https://github.com/RazorGenerator/RazorGenerator)
 - [RazorLight](https://github.com/toddams/RazorLight)
 - [FluentEmail](https://github.com/lukencode/FluentEmail)
-- [Scrutor](https://github.com/khellang/Scrutor)
+- [Scriban](https://github.com/lunet-io/scriban)
 
 ## Render text using Razor templates
 
